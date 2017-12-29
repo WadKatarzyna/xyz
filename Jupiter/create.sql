@@ -49,7 +49,7 @@ create table person(
 	person_nachname varchar(30) not null,
 	person_geschlecht varchar(30) not null,
 	person_geburtsdatum date not null,
-	person_gehalt numeric not null,
+	person_email varchar(30) not null,
 	person_rolle_id integer not null,
 
 	constraint fk_person_rolle foreign key(person_rolle_id) references rolle(rolle_id) on delete cascade
