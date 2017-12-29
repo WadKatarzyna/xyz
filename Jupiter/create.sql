@@ -108,7 +108,7 @@ create table kategorie(
 
 create table unterkategorie(
 	unterkategorie_id integer primary key not null auto_increment, 
-	unterkategorie_name varchar(30) unique not null,
+	unterkategorie_name varchar(30) not null,
 	unterkategorie_bezeichnung varchar(150) not null, 
 	unterkategorie_oberkat_id integer not null, 
 	
@@ -196,11 +196,6 @@ create table warenkorbArtikel(
 	constraint fk_warenkorbArtikel_artikel foreign key(warenkorbArtikel_artikel_id) references artikel(artikel_id) on delete cascade
 
 );
-
-
-
-
-
 
 
 
