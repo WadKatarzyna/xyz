@@ -12,8 +12,9 @@ public interface DAO<T> {
 	/**
 	 * save a object in DB
 	 * @param object
+	 * @return 
 	 */
-	void create(T object);
+	int create(T object);
 	
 	/**
 	 * returns the desired object 

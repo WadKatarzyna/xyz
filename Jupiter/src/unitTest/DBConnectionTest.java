@@ -16,7 +16,8 @@ public class DBConnectionTest {
 	@Test
 	public void testConnection() {
 		Person x = db.getPersonDAO().findById(1);
-		System.out.println(x.getVorname());
+		System.out.println(x.getNachname());
+		System.out.println(x.getGeschlecht());
 	}
 	
 }

@@ -19,12 +19,14 @@ public class DBManager {
 
 	private AdminDAO adminDAO;
 	private PersonDAO personDAO;
+	private AccountDAO accountDAO;
 
 	
 
 	private DBManager() {
 		adminDAO = new AdminDAO(this);
 		personDAO = new PersonDAO(this);
+		accountDAO = new AccountDAO(this);
 
 	}
 
@@ -86,6 +88,13 @@ public class DBManager {
 	 */
 	public PersonDAO getPersonDAO() {
 		return personDAO;
+	}
+
+	/**
+	 * @return the accountDAO
+	 */
+	public AccountDAO getAccountDAO() {
+		return accountDAO;
 	}
 
 

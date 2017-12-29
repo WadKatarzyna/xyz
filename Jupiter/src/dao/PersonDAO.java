@@ -2,8 +2,13 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import com.mysql.jdbc.PreparedStatement;
 
 import model.Person;
 
@@ -15,6 +20,9 @@ import model.Person;
 public class PersonDAO implements DAO<Person>{
 
 	
+	private static final String READ_FINDBYID = "SELECT * FROM person WHERE person_personalnr=?";
+
+	
 	private DBManager db;
 	
 	protected PersonDAO(DBManager db) {
@@ -24,17 +32,48 @@ public class PersonDAO implements DAO<Person>{
 	
 	
 	@Override
-	public void create(Person object) {
-		// TODO Auto-generated method stub
+	public int create(Person p) {
+		try {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			String date = df.format(p.getGeburtsdatum());
+			
+			String sql = (null+", '"+p.getVorname()+"', '"+p.getNachname()+"', '"+p.getGeschlecht()+"', '"+date+"',"
+					+ " '"+p.getEmail()+"', 2");  // 2 für user ( standardmäßig werden einträge als user gespeichert)
+												 // 1 für admin... siehe rolle tabelle
+			
+		    PreparedStatement pstmt = (PreparedStatement) db.getConnection().prepareStatement("INSERT INTO person VALUES("+ sql +");");
+
+		    pstmt.executeUpdate();
+		    
+			pstmt = (PreparedStatement) db.getConnection().prepareStatement("SELECT MAX(person_personalnr) FROM person") ;
+		    ResultSet rs = pstmt.executeQuery();
+		    
+		    int id = -1;
+		    if (rs.next()) {
+		      id = rs.getInt(1);
+		    }
+		    
+		    rs.close();
+		    pstmt.close();
+			
+		    
+		    return id;
+
+//		xs
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 		
 	}
 
 	@Override
 	public Person findById(int id) {
 		try {
-			ResultSet result = db.getConnection().createStatement()
-					.executeQuery("SELECT * FROM person WHERE person_personalnr=" +id);
-
+			PreparedStatement pstmt = (PreparedStatement) db.getConnection().prepareStatement(READ_FINDBYID);
+			pstmt.setInt(1, id);
+			ResultSet result = pstmt.executeQuery();
+			
 			if (result.next())
 				return parse(result);
 
@@ -70,7 +109,7 @@ public class PersonDAO implements DAO<Person>{
 		person.setNachname(result.getString("person_nachname"));
 		person.setGeschlecht(result.getString("person_geschlecht"));
 		person.setGeburtsdatum(result.getDate("person_geburtsdatum"));
-		person.setGehalt(result.getLong("person_gehalt"));
+		person.setEmail(result.getString("person_email"));
 		person.setRolle(result.getInt("person_rolle_id"));
 
 		return person;

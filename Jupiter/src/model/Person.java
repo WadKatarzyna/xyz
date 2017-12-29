@@ -15,7 +15,7 @@ public class Person {
 	private String nachname;
 	private String geschlecht;
 	private Date geburtsdatum;
-	private Long gehalt;
+	private String email;
 	private int rolle;
 	
 	
@@ -80,18 +80,8 @@ public class Person {
 	public void setGeburtsdatum(Date geburtsdatum) {
 		this.geburtsdatum = geburtsdatum;
 	}
-	/**
-	 * @return the gehalt
-	 */
-	public Long getGehalt() {
-		return gehalt;
-	}
-	/**
-	 * @param gehalt the gehalt to set
-	 */
-	public void setGehalt(Long gehalt) {
-		this.gehalt = gehalt;
-	}
+
+
 	/**
 	 * @return the rolle
 	 */
@@ -103,6 +93,13 @@ public class Person {
 	 */
 	public void setRolle(int rolle) {
 		this.rolle = rolle;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 }

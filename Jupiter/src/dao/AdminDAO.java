@@ -23,7 +23,7 @@ public class AdminDAO implements DAO<Admin> {
 	}
 	
 	@Override
-	public void create(Admin object) {
+	public int create(Admin object) {
 		throw new RuntimeException("not implemented yet");
 		
 	}
