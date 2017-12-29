@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -71,15 +72,15 @@ public class RegisterController extends HttpServlet {
 			db.getAccountDAO().create(account);
 			
 			
-		}catch(Exception e) {
+		}catch(IllegalArgumentException | ParseException e) {
 			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/registration");
 		}
 		
+		response.sendRedirect(request.getContextPath() + "/login");
 		
 		
 		
-		
-		doGet(request, response);
 	}
 
 }

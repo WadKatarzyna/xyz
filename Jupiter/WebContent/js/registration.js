@@ -7,7 +7,7 @@
             validating: 'glyphicon glyphicon-refresh'
         },
         fields: {
-            first_name: {
+            vorname: {
                 validators: {
                         stringLength: {
                         min: 2,
@@ -17,7 +17,7 @@
                     }
                 }
             },
-             last_name: {
+             nachname: {
                 validators: {
                      stringLength: {
                         min: 2,
@@ -27,7 +27,27 @@
                     }
                 }
             },
-			 user_name: {
+            gebdatum: {
+                validators: {
+                     stringLength: {
+                        min: 8,
+                    },
+                    notEmpty: {
+                        message: 'Please enter your Birthday'
+                    }
+                }
+            },
+            geschlecht: {
+                validators: {
+                     stringLength: {
+                        min: 8,
+                    },
+                    notEmpty: {
+                        message: 'Please select your Gender'
+                    }
+                }
+            },
+            username: {
                 validators: {
                      stringLength: {
                         min: 8,
@@ -37,24 +57,14 @@
                     }
                 }
             },
-			 user_password: {
+            user_passwort: {
                 validators: {
-                     stringLength: {
-                        min: 8,
-                    },
+                  stringLength: {
+                        min: 5,
+                  },
                     notEmpty: {
                         message: 'Please enter your Password'
-                    }
-                }
-            },
-			confirm_password: {
-                validators: {
-                     stringLength: {
-                        min: 8,
-                    },
-                    notEmpty: {
-                        message: 'Please confirm your Password'
-                    }
+                     }
                 }
             },
             email: {
@@ -67,25 +77,9 @@
                     }
                 }
             },
-            contact_no: {
-                validators: {
-                  stringLength: {
-                        min: 12, 
-                        max: 12,
-                    notEmpty: {
-                        message: 'Please enter your Contact No.'
-                     }
+           
                 }
-            },
-			 department: {
-                validators: {
-                    notEmpty: {
-                        message: 'Please select your Department/Office'
-                    }
-                }
-            },
-                }
-            }
+            
         })
         .on('success.form.bv', function(e) {
             $('#success_message').slideDown({ opacity: "show" }, "slow") // Do something ...

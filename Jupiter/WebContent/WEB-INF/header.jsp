@@ -1,3 +1,8 @@
+<%@page import="java.text.DecimalFormat"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="model.*"%>
+<%@page import="java.util.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +15,7 @@
 </head>
 <body>
 
+<% String credentials =  (String) request.getSession().getAttribute("credentials"); %>
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -37,16 +43,17 @@
       </div>
     </form>
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+    <% if(credentials == null){ %>
+	      <li><a href="registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+	      <li><a href="login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <%}else{ %>
+	      <li><a><span class="glyphicon glyphicon-user"></span> Hallo <%out.print(credentials); %></a></li>
+	      <li><a href="logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+	   <%} %>
     </ul>
   </div>
 </nav>
   
-<div class="container">
-  <h3>Right Aligned Navbar</h3>
-  <p>The .navbar-right class is used to right-align navigation bar buttons.</p>
-</div>
 
 </body>
 </html>
