@@ -29,11 +29,15 @@
             },
             gebdatum: {
                 validators: {
+                	date: {
+                        format: 'YYYY-MM-DD',
+                        message: 'The value is not a valid date'
+                    },
                      stringLength: {
-                        min: 8,
+                        min: 10,
                     },
                     notEmpty: {
-                        message: 'Please enter your Birthday'
+                        message: 'The value is not a valid date'
                     }
                 }
             },
@@ -100,3 +104,4 @@
             }, 'json');
         });
 });
+  

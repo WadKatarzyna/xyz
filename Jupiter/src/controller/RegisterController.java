@@ -75,6 +75,7 @@ public class RegisterController extends HttpServlet {
 		}catch(IllegalArgumentException | ParseException e) {
 			e.printStackTrace();
 			response.sendRedirect(request.getContextPath() + "/registration");
+			return;
 		}
 		
 		response.sendRedirect(request.getContextPath() + "/login");
