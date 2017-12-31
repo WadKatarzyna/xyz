@@ -12,6 +12,10 @@ public class ArtikelKategorieDAO implements DAO<ArtikelKategorie> {
 	
 	DBManager db = DBManager.getInstance();
 	
+	public ArtikelKategorieDAO(DBManager db) {
+		this.db = db;
+	}
+	
 	@Override
 	public int create(ArtikelKategorie object) {
 		// TODO Auto-generated method stub

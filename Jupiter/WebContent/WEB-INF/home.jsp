@@ -1,5 +1,20 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@page import="model.*"%>
+<%@page import="java.util.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+Account credentials = (Account)request.getSession().getAttribute("credentials");
+@SuppressWarnings("unchecked")
+List<Artikel> artikelList = (List<Artikel>)request.getAttribute("artikelList");
+@SuppressWarnings("unchecked")
+List<Hersteller> herstellerList = (List<Hersteller>)request.getAttribute("herstellerList");
+@SuppressWarnings("unchecked")
+List<BestellteArtikel> bestelleArtikelList = (List<BestellteArtikel>)request.getAttribute("bestelleArtikelList");
+
+
+%>
+
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -85,29 +100,50 @@
 	                class="glyphicon glyphicon-th"></span>Grid</a>
 	        </div>
 	    </div>
+	      
 	    <div id="products" class="row list-group">
+	    <%for(Artikel artikel : artikelList){ %>
 	        <div class="item  col-xs-4 col-lg-4">
+	        
 	            <div class="thumbnail">
 	                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
 	                <div class="caption">
+	              
 	                    <h4 class="group inner list-group-item-heading">
-	                        Product title</h4>
+	                        <%for(Hersteller hersteller : herstellerList){
+	                        		if(artikel.getId() == hersteller.getId()){
+	                        	%><b> <%out.println(hersteller.getName());  %></b> <%
+	                        		}
+	                        	 }%></h4>
+	                       
 	                    <p class="group inner list-group-item-text">
-	                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-	                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+	                        <%out.println(artikel.getBeschreibung());%></p>
 	                    <div class="row">
 	                        <div class="col-xs-12 col-md-6">
 	                            <p class="lead">
-	                                $21.000</p>
+	                     <%for(BestellteArtikel b : bestelleArtikelList){
+	                    	 	if(artikel.getId() == b.getArtikelId()){
+	                    	 		out.println(b.getPreis());
+	                    	 	}
+	                    	 
+	                    	 
+	                     }
+	                           
+	                           
+	                           %></p>
 	                        </div>
 	                        <div class="col-xs-12 col-md-6">
 	                            <a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
 	                        </div>
 	                    </div>
+	                   
 	                </div>
 	            </div>
+	            
 	        </div>
+	        <%} %>
 	    </div>
+	     
 	</div>
 	  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 	<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>

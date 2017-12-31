@@ -11,6 +11,9 @@ public class KategorieDAO implements DAO<Kategorie> {
 
 	DBManager db = DBManager.getInstance();
 	
+	public KategorieDAO(DBManager db) {
+		this.db = db;
+	}
 	
 	@Override
 	public int create(Kategorie object) {

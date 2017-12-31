@@ -14,6 +14,10 @@ public class BestellteArtikelDAO implements DAO<BestellteArtikel> {
 
 	DBManager db = DBManager.getInstance();
 	
+	public BestellteArtikelDAO(DBManager db) {
+		this.db = db;
+	}
+	
 	@Override
 	public int create(BestellteArtikel b) {
 		 int id = -1;
@@ -54,13 +58,16 @@ public class BestellteArtikelDAO implements DAO<BestellteArtikel> {
 	List<BestellteArtikel> output = new ArrayList<>();
 		
 		try {
+			
 			ResultSet result = db.getConnection().createStatement().executeQuery("select * from bestellteArtikel order by bestellteArtikel_bestellung_id");
 			
+			
 			while(result.next()) {
+				
 				output.add(parse(result));
 			}
 		}catch(SQLException e) {
-			
+			e.printStackTrace();
 		}
 		return output;
 	}
@@ -82,8 +89,10 @@ public class BestellteArtikelDAO implements DAO<BestellteArtikel> {
 		BestellteArtikel ba = new BestellteArtikel();
 		ba.setBestellungId(result.getInt("bestellteArtikel_bestellung_id"));
 		ba.setArtikelId(result.getInt("bestellteArtikel_artikel_id"));
-		ba.setMenge(result.getInt("bestellteArtikel_mengea"));
+		ba.setMenge(result.getInt("bestellteArtikel_menge"));
 		ba.setPreis(result.getDouble("bestellteArtikel_preis"));
+		
+		System.out.println(ba.getArtikelId());
 		
 		return ba;
 		

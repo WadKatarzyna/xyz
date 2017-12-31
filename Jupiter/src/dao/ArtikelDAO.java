@@ -11,6 +11,9 @@ public class ArtikelDAO implements DAO<Artikel> {
 
 	DBManager db = DBManager.getInstance();
 	
+	public ArtikelDAO(DBManager db) {
+		this.db = db;
+	}
 	
 	@Override
 	public int create(Artikel object) {
@@ -44,7 +47,7 @@ public class ArtikelDAO implements DAO<Artikel> {
 				output.add(parse(result));
 			}
 		}catch(SQLException e) {
-			
+			e.printStackTrace();
 		}
 		return output;
 	}

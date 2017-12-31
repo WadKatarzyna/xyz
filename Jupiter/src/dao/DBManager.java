@@ -17,16 +17,28 @@ public class DBManager {
 
 	private static Connection connection;
 
-	private AdminDAO adminDAO;
-	private PersonDAO personDAO;
 	private AccountDAO accountDAO;
+	private AdminDAO adminDAO;
+	private ArtikelDAO artikelDAO;
+	private ArtikelKategorieDAO artikelKategorieDAO;
+	private BestellteArtikelDAO bestellteArtikelDAO;
+	private HerstellerDAO herstellerDAO;
+	private KategorieDAO kategorieDAO;
+	private PersonDAO personDAO;
+	
+	
 
 	
 
 	private DBManager() {
-		adminDAO = new AdminDAO(this);
-		personDAO = new PersonDAO(this);
-		accountDAO = new AccountDAO(this);
+		adminDAO  			= new AdminDAO(this);
+		personDAO 			= new PersonDAO(this);
+		accountDAO 			= new AccountDAO(this);
+		artikelDAO 			= new ArtikelDAO(this);
+		artikelKategorieDAO	= new ArtikelKategorieDAO(this);
+		bestellteArtikelDAO 	= new BestellteArtikelDAO(this);
+		herstellerDAO 		= new HerstellerDAO(this);
+		kategorieDAO			= new KategorieDAO(this);
 
 	}
 
@@ -95,6 +107,41 @@ public class DBManager {
 	 */
 	public AccountDAO getAccountDAO() {
 		return accountDAO;
+	}
+
+	/**
+	 * @return the artikelDAO
+	 */
+	public ArtikelDAO getArtikelDAO() {
+		return artikelDAO;
+	}
+
+	/**
+	 * @return the artikelKategorieDAO
+	 */
+	public ArtikelKategorieDAO getArtikelKategorieDAO() {
+		return artikelKategorieDAO;
+	}
+
+	/**
+	 * @return the bestellteArtikelDAO
+	 */
+	public BestellteArtikelDAO getBestellteArtikelDAO() {
+		return bestellteArtikelDAO;
+	}
+
+	/**
+	 * @return the herstellerDAO
+	 */
+	public HerstellerDAO getHerstellerDAO() {
+		return herstellerDAO;
+	}
+
+	/**
+	 * @return the kategorieDAO
+	 */
+	public KategorieDAO getKategorieDAO() {
+		return kategorieDAO;
 	}
 
 

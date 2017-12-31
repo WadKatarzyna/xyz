@@ -54,7 +54,7 @@ public class LoginController extends HttpServlet {
 			
 			for(Account a : accounts) {
 				if(a.getUsername().equals(username) && a.getPasswort().equals(passwort)) {
-					request.getSession().setAttribute("credentials", a.getUsername());
+					request.getSession().setAttribute("credentials", a);
 					found = true;
 					break;
 				}
