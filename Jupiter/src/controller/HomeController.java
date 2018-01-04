@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -40,8 +41,16 @@ public class HomeController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String searchText = "";
+		searchText = request.getParameter("searchText");
+		List<Artikel> artikelList = new ArrayList<>();
+		if (searchText == null || searchText.isEmpty()) {
+			artikelList = db.getArtikelDAO().findAll();
+		}
+		else {
+			artikelList = db.getArtikelDAO().sortWithKeyword(searchText);
+		}
 		
-		List<Artikel> artikelList = db.getArtikelDAO().findAll();
 		List<Hersteller> herstellerList = db.getHerstellerDAO().findAll();
 		List<BestellteArtikel> bestelleArtikelList = db.getBestellteArtikelDAO().findAll();
 		

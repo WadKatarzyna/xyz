@@ -36,9 +36,9 @@ Account credentials = (Account)request.getSession().getAttribute("credentials");
       </li>
       <li><a href="#">Page 2</a></li>
     </ul>
-    <form class="navbar-form navbar-left" action="/action_page.php">
+    <form class="navbar-form navbar-left" method="Get" action=" <%=request.getContextPath()%>/home" >
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search" name="search">
+        <input type="text" class="form-control" placeholder="Search" name="searchText">
         <div class="input-group-btn">
           <button class="btn btn-default" type="submit">
             <i class="glyphicon glyphicon-search"></i>

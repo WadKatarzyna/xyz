@@ -64,6 +64,21 @@ public class ArtikelDAO implements DAO<Artikel> {
 		
 	}
 	
+	public List<Artikel> sortWithKeyword(String keyword) {
+		List<Artikel> output = new ArrayList<>();
+		
+		try {
+			ResultSet result = db.getConnection().createStatement().executeQuery("select * from artikel where artikel_beschreibung like '%"+keyword+"%'");
+			
+			while(result.next()) {
+				output.add(parse(result));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
+				
+	}
 	
 	private Artikel parse(ResultSet result) throws SQLException {
 		Artikel a = new Artikel();
