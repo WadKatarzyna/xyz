@@ -16,6 +16,8 @@ drop table if exists artikel;
 drop table if exists bestellung;
 drop table if exists account;
 drop table if exists person;
+drop table if exists kategorie_unterkategorie;
+
 -- Normalisierungstabellen
 drop table if exists rolle;
 drop table if exists hersteller;
@@ -109,20 +111,30 @@ create table kategorie(
 create table unterkategorie(
 	unterkategorie_id integer primary key not null auto_increment, 
 	unterkategorie_name varchar(30) not null,
-	unterkategorie_bezeichnung varchar(150) not null, 
-	unterkategorie_oberkat_id integer not null, 
+	unterkategorie_bezeichnung varchar(150) not null 
 	
-	constraint fk_unterkategorie_oberkat foreign key(unterkategorie_oberkat_id) references kategorie(kategorie_id) on delete cascade
 );
 
+create table kategorie_unterkategorie(
+	kategorie_unterkategorie_artikel_id integer not null,
+	kategorie_unterkategorie_kategorie_id integer not null,
+	kategorie_unterkategorie_unterkategorie_id integer not null,
+	
+	primary key(kategorie_unterkategorie_artikel_id, kategorie_unterkategorie_kategorie_id, kategorie_unterkategorie_unterkategorie_id),
+	constraint fk_kategorie_unterkategorie_artikel foreign key(kategorie_unterkategorie_artikel_id) references artikel(artikel_id) on delete cascade,
+	constraint fk_kategorie_unterkategorie_kategorie foreign key(kategorie_unterkategorie_kategorie_id) references kategorie(kategorie_id) on delete cascade,
+	constraint fk_kategorie_unterkategorie_unterkategorie foreign key(kategorie_unterkategorie_unterkategorie_id) references unterkategorie(unterkategorie_id) on delete cascade
+);
 
 create table artikelkategorie(
 	artikelkategorie_artikel_id integer not null,
 	artikelkategorie_kategorie_id integer not null,
+	artikelkategorie_unterkategorie_id integer not null,
 	
-	primary key(artikelkategorie_artikel_id, artikelkategorie_kategorie_id),
+	primary key(artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id),
 	constraint fk_artikelkategorie_artikel foreign key(artikelkategorie_artikel_id) references artikel(artikel_id) on delete cascade,
-	constraint fk_artikelkategorie_kategorie foreign key(artikelkategorie_kategorie_id) references kategorie(kategorie_id) on delete cascade
+	constraint fk_artikelkategorie_kategorie foreign key(artikelkategorie_kategorie_id) references kategorie(kategorie_id) on delete cascade,
+	constraint fk_artikelkategorie_unterkategorie foreign key(artikelkategorie_unterkategorie_id) references unterkategorie(unterkategorie_id) on delete cascade
 );
 
 create table admin(
