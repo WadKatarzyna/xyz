@@ -9,8 +9,11 @@ List<Artikel> artikelList = (List<Artikel>)request.getAttribute("artikelList");
 List<Hersteller> herstellerList = (List<Hersteller>)request.getAttribute("herstellerList");
 @SuppressWarnings("unchecked")
 List<BestellteArtikel> bestelleArtikelList = (List<BestellteArtikel>)request.getAttribute("bestelleArtikelList");
-
-
+@SuppressWarnings("unchecked")
+List<Kategorie> kategorieList = (List<Kategorie>)request.getAttribute("kategorieList");
+String listedItemsKeyword = (String)request.getAttribute("listedItemsKeyword");
+@SuppressWarnings("unchecked")
+List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttribute("unterkategorieList");
 %>
 
 
@@ -91,6 +94,46 @@ List<BestellteArtikel> bestelleArtikelList = (List<BestellteArtikel>)request.get
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
 </head>
 <body>
+	<div class="container">
+	  
+		    <div class="row">		
+		    <form method="Get" action="<%=request.getContextPath()%>/home" >
+			<div class="col-sm-3 nav-container">
+			    <div class="form-group">
+			        <select class="form-control nav" name="kategorie">
+			            <option value="11" selected >Kategorie</option>
+			            <%for(Kategorie kategorie : kategorieList){ %>
+	                  <option value=<%out.println(kategorie.getId()); %>><%out.println(kategorie.getName());  %></option>
+	                  <%} %>
+			        </select>
+			    </div>
+			 </div>
+			 
+			 <div class="col-sm-3 nav-container">
+			    <div class="form-group">
+			        <select class="form-control nav" name="unterkategorie">
+			            <option value="11" selected >Unterkategorie</option>
+			            <%for(Unterkategorie unterkategorie : unterkategorieList){ %>
+	                  <option value="<%out.print(unterkategorie.getId()); %>"><%out.println(unterkategorie.getName());  %></option>
+	                  <%} %>
+			        </select>
+			    </div>
+			 </div>
+			 
+		  	<button type="submit" class="btn btn-default">
+		  		<i class="glyphicon glyphicon-search"></i>List items
+		  	</button>
+		  </form>
+		</div>
+		<%if (listedItemsKeyword != "")  {%>
+		<div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <strong>Gut gemacht! </strong><%out.println(listedItemsKeyword);%>
+            </div>
+            
+           <%} %>
+	</div>
+
 	<div class="container">
 	    <div class="well well-sm">
 	        <strong>Display</strong>
