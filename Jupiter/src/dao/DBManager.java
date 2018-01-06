@@ -24,6 +24,7 @@ public class DBManager {
 	private BestellteArtikelDAO bestellteArtikelDAO;
 	private HerstellerDAO herstellerDAO;
 	private KategorieDAO kategorieDAO;
+	private UnterkategorieDAO unterkategorieDAO;
 	private PersonDAO personDAO;
 	
 	
@@ -39,7 +40,7 @@ public class DBManager {
 		bestellteArtikelDAO 	= new BestellteArtikelDAO(this);
 		herstellerDAO 		= new HerstellerDAO(this);
 		kategorieDAO			= new KategorieDAO(this);
-
+		unterkategorieDAO	= new UnterkategorieDAO(this);
 	}
 
 	private static void openConnection() {
@@ -47,7 +48,7 @@ public class DBManager {
 			Class.forName("com.mysql.jdbc.Driver");
 			String host = "jdbc:mysql://localhost:3306/imse_jupiter";
 			String user = "root";
-			String password = "";
+			String password = "root";
 			connection = DriverManager.getConnection(host, user, password);
 			
 			System.out.println("DB SUCCESS");
@@ -142,6 +143,13 @@ public class DBManager {
 	 */
 	public KategorieDAO getKategorieDAO() {
 		return kategorieDAO;
+	}
+	
+	/**
+	 * @return the unterkategorieDAO
+	 */
+	public UnterkategorieDAO getUnterkategorieDAO() {
+		return unterkategorieDAO;
 	}
 
 
