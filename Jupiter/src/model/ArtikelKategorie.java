@@ -5,6 +5,7 @@ public class ArtikelKategorie {
 	
 	private int artikel_id;
 	private int kategorie_id;
+	private int unterkategorie_id;
 	
 	
 	
@@ -33,6 +34,18 @@ public class ArtikelKategorie {
 	 */
 	public void setKategorie_id(int kategorie_id) {
 		this.kategorie_id = kategorie_id;
+	}
+	/**
+	 * @return the unterkategorie_id
+	 */
+	public int getUnterkategorie_id() {
+		return unterkategorie_id;
+	}
+	/**
+	 * @param unterkategorie_id the unterkategorie_id to set
+	 */
+	public void setUnterkategorie_id(int unterkategorie_id) {
+		this.unterkategorie_id = unterkategorie_id;
 	}
 	
 	
