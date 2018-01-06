@@ -48,7 +48,7 @@ public class DBManager {
 			Class.forName("com.mysql.jdbc.Driver");
 			String host = "jdbc:mysql://localhost:3306/imse_jupiter";
 			String user = "root";
-			String password = "root";
+			String password = "";
 			connection = DriverManager.getConnection(host, user, password);
 			
 			System.out.println("DB SUCCESS");
