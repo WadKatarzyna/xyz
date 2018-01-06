@@ -23,7 +23,16 @@ public class KategorieDAO implements DAO<Kategorie> {
 
 	@Override
 	public Kategorie findById(int id) {
-		// TODO Auto-generated method stub
+		try {
+			ResultSet result = db.getConnection().createStatement()
+					.executeQuery("SELECT * FROM kategorie WHERE kategorie_id=" +id);
+
+			if (result.next())
+				return parse(result);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -64,5 +73,5 @@ public class KategorieDAO implements DAO<Kategorie> {
 		return k;
 		
 	}
-
+	
 }
