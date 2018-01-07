@@ -73,12 +73,14 @@ public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
 		
 		
 		try {
-			ResultSet result = db.getConnection().createStatement().executeQuery("select warenkorbArtikel_menge from warenkorbArtikel where warenkorbArtikel_artikel_id="+o.getArtikelid());
+			ResultSet result = db.getConnection().createStatement().executeQuery("select warenkorbArtikel_menge from warenkorbArtikel where warenkorbArtikel_artikel_id="+o.getArtikelid()+
+					" AND warenkorbArtikel_id="+o.getWarenkorbid());
 			if(result.next()) {
 				menge = result.getInt("warenkorbArtikel_menge");
 				menge = menge+1;
-			
+
 			}
+			
 			
 			String sql = ("warenkorbArtikel_menge='"+menge+"'");
 			
@@ -154,7 +156,8 @@ public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
 		
 		
 		try {
-			ResultSet result = db.getConnection().createStatement().executeQuery("select warenkorbArtikel_menge from warenkorbArtikel where warenkorbArtikel_artikel_id="+o.getArtikelid());
+			ResultSet result = db.getConnection().createStatement().executeQuery("select warenkorbArtikel_menge from warenkorbArtikel where warenkorbArtikel_artikel_id="+o.getArtikelid()+
+					" AND warenkorbArtikel_id="+o.getWarenkorbid());
 			if(result.next()) {
 				menge = result.getInt("warenkorbArtikel_menge");
 				menge = menge-1;

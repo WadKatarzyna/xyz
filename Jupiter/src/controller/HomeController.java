@@ -205,7 +205,7 @@ public class HomeController extends HttpServlet {
 			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
 				if(a.getArtikelid() == artikelId) {
 					oldElement = true;
-				
+					
 					db.getWarenkorbArtikelDAO().update(a);
 				}
 			}
