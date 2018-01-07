@@ -206,6 +206,18 @@ public class HomeController extends HttpServlet {
 				if(a.getArtikelid() == artikelId) {
 					oldElement = true;
 					
+					for(Artikel artikel : db.getArtikelDAO().findAll()) {
+						if(artikel.getId()== artikelId) {
+							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
+								if(b.getArtikelId() == artikel.getId()) {
+									a.setSumme(b.getPreis());
+								}
+							}
+							
+						}
+					}
+					
+					
 					db.getWarenkorbArtikelDAO().update(a);
 				}
 			}
@@ -215,7 +227,18 @@ public class HomeController extends HttpServlet {
 				warenkorbartikel.setWarenkorbid(warenkorb.getId());
 				warenkorbartikel.setArtikelid(artikelId);
 				warenkorbartikel.setMenge(1);
-				warenkorbartikel.setSumme(8989);
+				
+				for(Artikel a : db.getArtikelDAO().findAll()) {
+					if(a.getId()== artikelId) {
+						for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
+							if(b.getArtikelId() == a.getId()) {
+								warenkorbartikel.setSumme(b.getPreis());
+							}
+						}
+						
+					}
+				}
+				
 				db.getWarenkorbArtikelDAO().create(warenkorbartikel);
 			}
 			
@@ -257,7 +280,22 @@ public class HomeController extends HttpServlet {
 				}
 			}
 			
+		}else if(request.getParameter("typ").equals("checkout")) {
+//			System.out.println("in checkout");
+//			@SuppressWarnings("unchecked")
+//			List<WarenkorbArtikel> warenkorbArtikel = (List<WarenkorbArtikel>) request.getAttribute("warenkorbArtikel");
+			
+			
+			//TODO nullpointer.. bestellung implementieren
+			
+//			for(WarenkorbArtikel w : warenkorbArtikel) {
+//				System.out.println("artikelID: "+w.getArtikelid());
+//			}
+//			
+			
 		}
+		
+		System.out.println("in home");
 		
 		
 		

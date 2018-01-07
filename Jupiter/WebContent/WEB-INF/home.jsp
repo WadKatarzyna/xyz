@@ -99,6 +99,7 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
 </head>
 <body>
+	
 	<div class="container">
 	  
 		    <div class="row">		
@@ -266,14 +267,18 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 						<p>Total <span>€0</span></p>
 					<% } %>
 				</div> <!-- cd-cart-total -->
-
-				<a href="#0" class="checkout-btn">Jetzt Bestellen(noch nicht impl.)</a>
-
+				<%if(warenkorbArtikel != null){ %>
+				<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
+					<input type="hidden" name="typ" value="checkout" />
+					<input type="hidden" name="accountId" value="<%=credentials.getId()%>" />
+					<input type="hidden" name="warenkorbArtikel" value="<%=warenkorbArtikel%>" />
+					<%if(total!= 0) %><a href="#0" class="checkout-btn" onclick="$(this).closest('form').submit()">Jetzt Bestellen</a>
+				</form>
+				
+				<% }%>
 				<p class="cd-go-to-cart"><a href="#0">Zeige Bestellungen(noch nicht impl.)</a></p>
 			</div> <!-- cd-cart -->
 
-
- 
 
 	
 </body>
