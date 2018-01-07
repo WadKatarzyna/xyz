@@ -9,8 +9,12 @@ List<Artikel> artikelList = (List<Artikel>)request.getAttribute("artikelList");
 List<Hersteller> herstellerList = (List<Hersteller>)request.getAttribute("herstellerList");
 @SuppressWarnings("unchecked")
 List<BestellteArtikel> bestelleArtikelList = (List<BestellteArtikel>)request.getAttribute("bestelleArtikelList");
+@SuppressWarnings("unchecked")
+List<WarenkorbArtikel> warenkorbArtikel = (List<WarenkorbArtikel>) request.getAttribute("warenkorbArtikel");
+@SuppressWarnings("unchecked")
+List<Artikel> warenkorbartikellist = (List<Artikel>) request.getAttribute("warenkorbartikellist");
 
-
+Warenkorb warenkorb = (Warenkorb) request.getAttribute("warennkorb");
 %>
 
 
@@ -131,26 +135,101 @@ List<BestellteArtikel> bestelleArtikelList = (List<BestellteArtikel>)request.get
 	                           
 	                           
 	                           %></p>
-	                        </div>
-	                        <div class="col-xs-12 col-md-6">
-	                            <a class="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
-	                        </div>
+							</div>
+							<%
+							if(credentials != null ){ %>
+								<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
+									<input type="hidden" name="artikelId" value="<%=artikel.getId()%>" />
+									<input type="hidden" name="accountId" value="<%=credentials.getId()%>" />
+									<input type="hidden" name="typ" value="cart" />
+									<button type="submit" value="warenkorb" class="btn btn-success my-cart-icon"> Add to cart</button>
+								</form>
+							<%}
+				
+							%>
+						
 	                    </div>
 	                   
 	                </div>
 	            </div>
 	            
-	        </div>
-	        <%} %>
+			</div>
+			<%}%>
+
 	    </div>
 	     
-	</div>
-	  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-	<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+    </div>
+    <div id="cd-shadow-layer"></div>
+
+      <!-- example mocked cart -->
+			<div id="cd-cart">
+				<h2 id="warenkorb">Warenkorb</h2>
+				<ul class="cd-cart-items">
+				<% double total = 0;
+				if(warenkorbArtikel != null){
+						 for(WarenkorbArtikel w : warenkorbArtikel){ %>
+							<li>
+								<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
+									<input type="hidden" name="typ" value="decrease" />
+									<input type="hidden" name="artikelId" value="<%=w.getArtikelid()%>" />
+									<input type="hidden" name="accountId" value="<%=credentials.getId()%>" />
+									<input type="submit" value='-' class='qtyminus' field='quantity' />
+									<% out.print(w.getMenge()); %>
+								</form>
+								<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
+									<input type="hidden" name="typ" value="increase" />
+									<input type="hidden" name="artikelId" value="<%=w.getArtikelid()%>" />
+									<input type="hidden" name="accountId" value="<%=credentials.getId()%>" />
+									<input type="submit" value='+' class='qtyplus' field='quantity' />
+								</form>
 	
-	  
+								<% 
+								for(Artikel artikel : artikelList){
+									if(w.getArtikelid()==artikel.getId()){
+										out.print(artikel.getBeschreibung());
+										
+										for(BestellteArtikel b : bestelleArtikelList){
+											if(artikel.getId() == b.getArtikelId()){
+												%>
+												<div class="cd-price">€<% out.print(b.getPreis()); %></div>
+												<%
+												total += w.getMenge() * b.getPreis();
+											}
+										}
+									}
+								}
+								
+								 %>
 	
-	    <script  src="js/home.js"></script>
+								
+								
+								<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
+									<input type="hidden" name="typ" value="remove" />
+									<input type="hidden" name="artikelId" value="<%=w.getArtikelid()%>" />
+									<a href="#" class="cd-item-remove cd-img-replace" onclick="$(this).closest('form').submit()">Remove</a>
+								</form>
+								
+							</li>
+						<%} 
+						}%>
+						
+				</ul> <!-- cd-cart-items -->
+
+				<div class="cd-cart-total">
+					<% if (warenkorb != null) { %>
+						<p>Total <span>$<% out.print(total); %></span></p>
+					<% } else { %>
+						<p>Total <span>$0</span></p>
+					<% } %>
+				</div> <!-- cd-cart-total -->
+
+				<a href="#0" class="checkout-btn">Jetzt Bestellen(noch nicht impl.)</a>
+
+				<p class="cd-go-to-cart"><a href="#0">Zeige Bestellungen(noch nicht impl.)</a></p>
+			</div> <!-- cd-cart -->
+
+
+ 
 
 	
 </body>

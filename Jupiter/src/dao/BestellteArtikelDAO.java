@@ -92,8 +92,6 @@ public class BestellteArtikelDAO implements DAO<BestellteArtikel> {
 		ba.setMenge(result.getInt("bestellteArtikel_menge"));
 		ba.setPreis(result.getDouble("bestellteArtikel_preis"));
 		
-		System.out.println(ba.getArtikelId());
-		
 		return ba;
 		
 	}

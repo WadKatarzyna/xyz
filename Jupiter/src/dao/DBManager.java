@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import model.Warenkorb;
+
 /**
  * <h1> Database Manager</h1>
  * 
@@ -25,6 +27,8 @@ public class DBManager {
 	private HerstellerDAO herstellerDAO;
 	private KategorieDAO kategorieDAO;
 	private PersonDAO personDAO;
+	private WarenkorbArtikelDAO warenkorbArtikelDAO;
+	private WarenkorbDAO warenkorbDAO;
 	
 	
 
@@ -39,7 +43,8 @@ public class DBManager {
 		bestellteArtikelDAO 	= new BestellteArtikelDAO(this);
 		herstellerDAO 		= new HerstellerDAO(this);
 		kategorieDAO			= new KategorieDAO(this);
-
+		warenkorbArtikelDAO	= new WarenkorbArtikelDAO(this);
+		warenkorbDAO			= new WarenkorbDAO(this);
 	}
 
 	private static void openConnection() {
@@ -142,6 +147,20 @@ public class DBManager {
 	 */
 	public KategorieDAO getKategorieDAO() {
 		return kategorieDAO;
+	}
+
+	/**
+	 * @return the warenkorbArtikelDAO
+	 */
+	public WarenkorbArtikelDAO getWarenkorbArtikelDAO() {
+		return warenkorbArtikelDAO;
+	}
+
+	/**
+	 * @return the warenkorbDAO
+	 */
+	public WarenkorbDAO getWarenkorbDAO() {
+		return warenkorbDAO;
 	}
 
 
