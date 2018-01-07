@@ -80,6 +80,51 @@ public class ArtikelDAO implements DAO<Artikel> {
 				
 	}
 	
+	public List<Artikel> sortWithCategory(int categoryID) {
+		List<Artikel> output = new ArrayList<>();
+		
+		try {
+			ResultSet result = db.getConnection().createStatement().executeQuery("SELECT * FROM artikel WHERE artikel_id IN (SELECT artikelkategorie_artikel_id FROM artikelkategorie WHERE artikelkategorie_kategorie_id="+categoryID+")");
+			
+			while(result.next()) {
+				output.add(parse(result));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
+	
+	public List<Artikel> sortWithUndercategory(int undercategoryID) {
+		List<Artikel> output = new ArrayList<>();
+		
+		try {
+			ResultSet result = db.getConnection().createStatement().executeQuery("SELECT * FROM artikel WHERE artikel_id IN (SELECT artikelkategorie_artikel_id FROM artikelkategorie WHERE artikelkategorie_unterkategorie_id="+undercategoryID+")");
+			
+			while(result.next()) {
+				output.add(parse(result));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
+	
+	public List<Artikel> sortWithBothCcategory(int kategorieID, int unterkategorieID) {
+		List<Artikel> output = new ArrayList<>();
+		
+		try {
+			ResultSet result = db.getConnection().createStatement().executeQuery("SELECT * FROM artikel WHERE artikel_id IN (SELECT artikelkategorie_artikel_id FROM artikelkategorie WHERE artikelkategorie_unterkategorie_id="+unterkategorieID+" and artikelkategorie_kategorie_id="+kategorieID+")");
+			
+			while(result.next()) {
+				output.add(parse(result));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
+	
 	private Artikel parse(ResultSet result) throws SQLException {
 		Artikel a = new Artikel();
 		a.setId(result.getInt("artikel_id"));

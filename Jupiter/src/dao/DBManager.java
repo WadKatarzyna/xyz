@@ -26,6 +26,7 @@ public class DBManager {
 	private BestellteArtikelDAO bestellteArtikelDAO;
 	private HerstellerDAO herstellerDAO;
 	private KategorieDAO kategorieDAO;
+	private UnterkategorieDAO unterkategorieDAO;
 	private PersonDAO personDAO;
 	private WarenkorbArtikelDAO warenkorbArtikelDAO;
 	private WarenkorbDAO warenkorbDAO;
@@ -45,6 +46,8 @@ public class DBManager {
 		kategorieDAO			= new KategorieDAO(this);
 		warenkorbArtikelDAO	= new WarenkorbArtikelDAO(this);
 		warenkorbDAO			= new WarenkorbDAO(this);
+		unterkategorieDAO	= new UnterkategorieDAO(this);
+
 	}
 
 	private static void openConnection() {
@@ -147,6 +150,13 @@ public class DBManager {
 	 */
 	public KategorieDAO getKategorieDAO() {
 		return kategorieDAO;
+	}
+	
+	/**
+	 * @return the unterkategorieDAO
+	 */
+	public UnterkategorieDAO getUnterkategorieDAO() {
+		return unterkategorieDAO;
 	}
 
 	/**
