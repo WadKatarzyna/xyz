@@ -261,9 +261,9 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 
 				<div class="cd-cart-total">
 					<% if (warenkorb != null) { %>
-						<p>Total <span>$<% out.print(total); %></span></p>
+						<p>Total <span>€<% out.print(total); %></span></p>
 					<% } else { %>
-						<p>Total <span>$0</span></p>
+						<p>Total <span>€0</span></p>
 					<% } %>
 				</div> <!-- cd-cart-total -->
 

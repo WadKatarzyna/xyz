@@ -121,7 +121,7 @@ header {
   left: 0;
 }
 #cd-hamburger-menu a {
-  background: #26292f url("../Image/cd-hamburger-menu.svg") no-repeat center center;
+  background: #26292f url("../../images/cd-hamburger-menu.svg") no-repeat center center;
 }
 @media only screen and (min-width: 1200px) {
   #cd-hamburger-menu {
@@ -286,7 +286,7 @@ header {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: url("../Images/cd-remove-item.svg") no-repeat center center;
+  background: url("../../images/cd-remove-item.svg") no-repeat center center;
 }
 .no-touch #cd-cart .cd-item-remove:hover {
   background-color: #e0e6ef;
