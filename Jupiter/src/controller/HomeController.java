@@ -19,6 +19,7 @@ import model.Account;
 import model.Artikel;
 import model.ArtikelKategorie;
 import model.BestellteArtikel;
+import model.Bestellung;
 import model.Hersteller;
 import model.Warenkorb;
 import model.WarenkorbArtikel;
@@ -263,7 +264,18 @@ public class HomeController extends HttpServlet {
 			
 			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
 				if(a.getArtikelid() == artikelId) {
-
+					
+					for(Artikel artikel : db.getArtikelDAO().findAll()) {
+						if(artikel.getId()== artikelId) {
+							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
+								if(b.getArtikelId() == artikel.getId()) {
+									//TODO TESTEN
+									a.setSumme(b.getPreis());
+								}
+							}
+							
+						}
+					}
 					db.getWarenkorbArtikelDAO().update(a);
 				}
 			}
@@ -275,27 +287,45 @@ public class HomeController extends HttpServlet {
 			
 			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
 				if(a.getArtikelid() == artikelId) {
-
+					
+					for(Artikel artikel : db.getArtikelDAO().findAll()) {
+						if(artikel.getId()== artikelId) {
+							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
+								if(b.getArtikelId() == artikel.getId()) {
+									//TODO TESTEN
+									a.setSumme(b.getPreis());
+								}
+							}
+							
+						}
+					}
+					
 					db.getWarenkorbArtikelDAO().updateDecrease(a);
 				}
 			}
 			
 		}else if(request.getParameter("typ").equals("checkout")) {
-//			System.out.println("in checkout");
-//			@SuppressWarnings("unchecked")
-//			List<WarenkorbArtikel> warenkorbArtikel = (List<WarenkorbArtikel>) request.getAttribute("warenkorbArtikel");
+			
+			System.out.println("in checkout");
+			
+			String accountId = request.getParameter("accountId");
+			String total = request.getParameter("total");
 			
 			
-			//TODO nullpointer.. bestellung implementieren
+			Bestellung bestellung = new Bestellung();
+			bestellung.setSumme(Double.parseDouble(total));
+			bestellung.setAccountId(Integer.parseInt(accountId));
+			int bestellungID = db.getBestellungDAO().create(bestellung);
 			
-//			for(WarenkorbArtikel w : warenkorbArtikel) {
-//				System.out.println("artikelID: "+w.getArtikelid());
-//			}
-//			
+			
+			//lösche warenkorb nach bestellung
+			for(WarenkorbArtikel wa : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+				db.getWarenkorbArtikelDAO().deleteByarticleId(wa.getArtikelid());
+			}
+			
+			
 			
 		}
-		
-		System.out.println("in home");
 		
 		
 		

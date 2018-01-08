@@ -30,6 +30,7 @@ public class DBManager {
 	private PersonDAO personDAO;
 	private WarenkorbArtikelDAO warenkorbArtikelDAO;
 	private WarenkorbDAO warenkorbDAO;
+	private BestellungDAO bestellungDAO;
 	
 	
 
@@ -47,6 +48,7 @@ public class DBManager {
 		warenkorbArtikelDAO	= new WarenkorbArtikelDAO(this);
 		warenkorbDAO			= new WarenkorbDAO(this);
 		unterkategorieDAO	= new UnterkategorieDAO(this);
+		bestellungDAO		= new BestellungDAO(this);
 
 	}
 
@@ -172,6 +174,8 @@ public class DBManager {
 	public WarenkorbDAO getWarenkorbDAO() {
 		return warenkorbDAO;
 	}
-
+	public BestellungDAO getBestellungDAO() {
+		return bestellungDAO;
+	}
 
 }

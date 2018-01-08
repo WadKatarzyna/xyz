@@ -271,7 +271,7 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 				<form class="navbar-form navbar-left" method="post" action="<%=request.getContextPath()%>/home">
 					<input type="hidden" name="typ" value="checkout" />
 					<input type="hidden" name="accountId" value="<%=credentials.getId()%>" />
-					<input type="hidden" name="warenkorbArtikel" value="<%=warenkorbArtikel%>" />
+					<input type="hidden" name="total" value="<%=total%>" />
 					<%if(total!= 0) %><a href="#0" class="checkout-btn" onclick="$(this).closest('form').submit()">Jetzt Bestellen</a>
 				</form>
 				

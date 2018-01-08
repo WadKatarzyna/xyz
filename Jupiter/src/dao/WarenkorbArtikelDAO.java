@@ -170,7 +170,7 @@ public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
 		
 		
 		int menge = 0;
-		
+		double summe = 0;
 
 		
 		
@@ -187,12 +187,25 @@ public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
 				deleteByarticleId(o.getArtikelid());
 			}
 			
+			ResultSet res = db.getConnection().createStatement().executeQuery("select warenkorbArtikel_summe from warenkorbArtikel where warenkorbArtikel_artikel_id="+o.getArtikelid()+
+					" AND warenkorbArtikel_id="+o.getWarenkorbid());
+			if(res.next()) {
+				summe = res.getDouble("warenkorbArtikel_summe");
+				summe = summe-o.getSumme();
+
+			}
+			
 			
 			String sql = ("warenkorbArtikel_menge='"+menge+"'");
-			
+			String sqlSumme = ("warenkorbArtikel_summe='"+summe+"'");
 			
 			db.getConnection().createStatement().executeUpdate("UPDATE warenkorbArtikel SET "+sql+" WHERE warenkorbArtikel_artikel_id="+o.getArtikelid()+
 					" AND warenkorbArtikel_id="+o.getWarenkorbid());
+			
+			db.getConnection().createStatement().executeUpdate("UPDATE warenkorbArtikel SET "+sqlSumme+" WHERE warenkorbArtikel_artikel_id="+o.getArtikelid()+
+					" AND warenkorbArtikel_id="+o.getWarenkorbid());
+			
+			
 		} catch (MySQLIntegrityConstraintViolationException e) {
 			throw new IllegalArgumentException("Product konnte nicht verändert werden");
 		} catch (SQLException e) {
