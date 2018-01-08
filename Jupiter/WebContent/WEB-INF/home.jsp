@@ -139,7 +139,6 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
             
            <%} %>
 	</div>
-
 	<div class="container">
 	    <div class="well well-sm">
 	        <strong>Display</strong>
@@ -155,7 +154,8 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 	        <div class="item  col-xs-4 col-lg-4">
 	        
 	            <div class="thumbnail">
-	                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+	            <%String url = "/images/Artikel/"+artikel.getId()+".png"; %>
+	                <img class="group list-group-image" src="<%=request.getContextPath()%><%out.print(url); %>" alt="" />
 	                <div class="caption">
 	              
 	                    <h4 class="group inner list-group-item-heading">
