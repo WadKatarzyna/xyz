@@ -15,6 +15,7 @@ List<WarenkorbArtikel> warenkorbArtikel = (List<WarenkorbArtikel>) request.getAt
 List<Artikel> warenkorbartikellist = (List<Artikel>) request.getAttribute("warenkorbartikellist");
 
 Warenkorb warenkorb = (Warenkorb) request.getAttribute("warennkorb");
+@SuppressWarnings("unchecked")
 List<Kategorie> kategorieList = (List<Kategorie>)request.getAttribute("kategorieList");
 String listedItemsKeyword = (String)request.getAttribute("listedItemsKeyword");
 @SuppressWarnings("unchecked")
@@ -170,16 +171,9 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 	                    <div class="row">
 	                        <div class="col-xs-12 col-md-6">
 	                            <p class="lead">
-	                     <%for(BestellteArtikel b : bestelleArtikelList){
-	                    	 	if(artikel.getId() == b.getArtikelId()){
-	                    	 		out.println(b.getPreis());
-	                    	 	}
-	                    	 
-	                    	 
-	                     }
-	                           
-	                           
-	                           %></p>
+	                     <%
+	                    	 		out.println(artikel.getPreis());
+	                    	 %></p>
 							</div>
 							<%
 							if(credentials != null ){ %>
@@ -232,15 +226,11 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 								for(Artikel artikel : artikelList){
 									if(w.getArtikelid()==artikel.getId()){
 										out.print(artikel.getBeschreibung());
-										
-										for(BestellteArtikel b : bestelleArtikelList){
-											if(artikel.getId() == b.getArtikelId()){
-												%>
-												<div class="cd-price">€<% out.print(b.getPreis()); %></div>
-												<%
-												total += w.getMenge() * b.getPreis();
-											}
-										}
+										%>
+										<div class="cd-price">€<% out.print(artikel.getPreis()); %></div>
+										<%
+												total += w.getMenge() * artikel.getPreis();
+								
 									}
 								}
 								
@@ -276,7 +266,8 @@ List<Unterkategorie> unterkategorieList = (List<Unterkategorie>)request.getAttri
 				</form>
 				
 				<% }%>
-				<p class="cd-go-to-cart"><a href="#0">Zeige Bestellungen(noch nicht impl.)</a></p>
+				
+			<!--  	<p class="cd-go-to-cart"><a href="#0">Zeige Bestellungen(noch nicht impl.)</a></p> -->
 			</div> <!-- cd-cart -->
 
 

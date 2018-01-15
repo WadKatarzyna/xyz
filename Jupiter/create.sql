@@ -81,7 +81,7 @@ create table bestellung (
 
 create table artikel(
 	artikel_id integer primary key not null auto_increment, 
-	#artikel_preis numeric not null, 
+	artikel_preis numeric not null, 
 	artikel_beschreibung varchar(500) not null, 
 	artikel_rest_menge integer not null, 
 	artikel_hersteller_id integer not null, 

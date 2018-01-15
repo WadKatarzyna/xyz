@@ -131,6 +131,7 @@ public class ArtikelDAO implements DAO<Artikel> {
 		a.setBeschreibung(result.getString("artikel_beschreibung"));
 		a.setRestmenge(result.getInt("artikel_rest_menge"));
 		a.setHersteller_id(result.getInt("artikel_hersteller_id"));
+		a.setPreis(result.getDouble("artikel_preis"));
 		
 		return a;
 		

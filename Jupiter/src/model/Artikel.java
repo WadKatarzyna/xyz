@@ -6,6 +6,7 @@ public class Artikel {
 	private String beschreibung;
 	private int restmenge;
 	private int hersteller_id;
+	private double preis;
 	
 	
 	
@@ -56,6 +57,18 @@ public class Artikel {
 	 */
 	public void setHersteller_id(int hersteller_id) {
 		this.hersteller_id = hersteller_id;
+	}
+	/**
+	 * @return the preis
+	 */
+	public double getPreis() {
+		return preis;
+	}
+	/**
+	 * @param preis the preis to set
+	 */
+	public void setPreis(double preis) {
+		this.preis = preis;
 	}
 	
 	

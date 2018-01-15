@@ -178,6 +178,7 @@ public class HomeController extends HttpServlet {
 				}
 			}
 					
+			//erstelle warenkorb
 			if (warenkorb == null) {
 				warenkorb = new Warenkorb();
 				warenkorb.setAccountId(Integer.parseInt(accountId));
@@ -209,11 +210,7 @@ public class HomeController extends HttpServlet {
 					
 					for(Artikel artikel : db.getArtikelDAO().findAll()) {
 						if(artikel.getId()== artikelId) {
-							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
-								if(b.getArtikelId() == artikel.getId()) {
-									a.setSumme(b.getPreis());
-								}
-							}
+							a.setSumme(artikel.getPreis());
 							
 						}
 					}
@@ -223,6 +220,7 @@ public class HomeController extends HttpServlet {
 				}
 			}
 			
+			//wenn keine aritkel im warenkorb..
 			if (!oldElement) {
 				WarenkorbArtikel warenkorbartikel = new WarenkorbArtikel();
 				warenkorbartikel.setWarenkorbid(warenkorb.getId());
@@ -231,11 +229,7 @@ public class HomeController extends HttpServlet {
 				
 				for(Artikel a : db.getArtikelDAO().findAll()) {
 					if(a.getId()== artikelId) {
-						for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
-							if(b.getArtikelId() == a.getId()) {
-								warenkorbartikel.setSumme(b.getPreis());
-							}
-						}
+						warenkorbartikel.setSumme(a.getPreis());
 						
 					}
 				}
@@ -267,12 +261,8 @@ public class HomeController extends HttpServlet {
 					
 					for(Artikel artikel : db.getArtikelDAO().findAll()) {
 						if(artikel.getId()== artikelId) {
-							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
-								if(b.getArtikelId() == artikel.getId()) {
-									//TODO TESTEN
-									a.setSumme(b.getPreis());
-								}
-							}
+							
+							a.setSumme(artikel.getPreis());
 							
 						}
 					}
@@ -290,12 +280,7 @@ public class HomeController extends HttpServlet {
 					
 					for(Artikel artikel : db.getArtikelDAO().findAll()) {
 						if(artikel.getId()== artikelId) {
-							for(BestellteArtikel b : db.getBestellteArtikelDAO().findAll()) {
-								if(b.getArtikelId() == artikel.getId()) {
-									//TODO TESTEN
-									a.setSumme(b.getPreis());
-								}
-							}
+							a.setSumme(artikel.getPreis());
 							
 						}
 					}
@@ -309,14 +294,33 @@ public class HomeController extends HttpServlet {
 			System.out.println("in checkout");
 			
 			String accountId = request.getParameter("accountId");
-			String total = request.getParameter("total");
+			Double total = Double.parseDouble(request.getParameter("total"));
 			
+			
+			List<WarenkorbArtikel> warenkorbArtikelList = db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
 			
 			Bestellung bestellung = new Bestellung();
-			bestellung.setSumme(Double.parseDouble(total));
+			bestellung.setSumme(total);
 			bestellung.setAccountId(Integer.parseInt(accountId));
 			int bestellungID = db.getBestellungDAO().create(bestellung);
 			
+			
+			for(WarenkorbArtikel w : warenkorbArtikelList) {
+				BestellteArtikel ba = new BestellteArtikel();
+				ba.setBestellungId(bestellungID);
+				ba.setArtikelId(w.getArtikelid());
+				ba.setMenge(w.getMenge());
+				for(Artikel a : db.getArtikelDAO().findAll()) {
+					if(a.getId() == w.getArtikelid()) {
+						ba.setPreis(a.getPreis());
+					}
+				}
+				db.getBestellteArtikelDAO().create(ba);
+			}
+			
+			
+		
+		
 			
 			//lösche warenkorb nach bestellung
 			for(WarenkorbArtikel wa : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
