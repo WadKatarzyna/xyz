@@ -1,4 +1,4 @@
-package unitTest;
+package unitTest.SQL;
 
 import org.junit.jupiter.api.Test;
 

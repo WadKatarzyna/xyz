@@ -1,4 +1,4 @@
-package unitTest;
+package unitTest.SQL;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
