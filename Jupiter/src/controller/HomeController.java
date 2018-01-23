@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +51,18 @@ public class HomeController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+	      Cookie[] cookies = request.getCookies();
+	      String workWith = "";
+
+	        for(int i = 0; i < cookies.length; i++) { 
+	            Cookie c = cookies[i];
+	            if (c.getName().equals("DB")) {
+	                workWith = c.getValue();
+	            }
+	        }
+	        
+	        
+		
 		Account account = (Account) request.getSession().getAttribute("credentials");
 		
 		String searchText = "";
@@ -66,12 +79,26 @@ public class HomeController extends HttpServlet {
 		int kategorieID = 0;
 		int unterkategorieID = 0;
 
-		List<Kategorie> kategorieList = db.getKategorieDAO().findAll();
 		List<Artikel> artikelList = new ArrayList<>();
-		List<Hersteller> herstellerList = db.getHerstellerDAO().findAll();
-		List<BestellteArtikel> bestelleArtikelList = db.getBestellteArtikelDAO().findAll();
-		List<Unterkategorie> unterkategorieList = db.getUnterkategorieDAO().findAll();
-		List<ArtikelKategorie> artikelKategorieList = db.getArtikelKategorieDAO().findAll();
+		
+		List<Kategorie> kategorieList = new ArrayList<>();
+		List<Hersteller> herstellerList = new ArrayList<>();
+		List<BestellteArtikel> bestelleArtikelList = new ArrayList<>();
+		List<Unterkategorie> unterkategorieList = new ArrayList<>();
+		List<ArtikelKategorie> artikelKategorieList = new ArrayList<>();
+		
+		if(workWith.equals("SQL")) {
+			kategorieList = db.getKategorieDAO().findAll();
+			herstellerList = db.getHerstellerDAO().findAll();
+			bestelleArtikelList = db.getBestellteArtikelDAO().findAll();
+			unterkategorieList = db.getUnterkategorieDAO().findAll();
+			artikelKategorieList = db.getArtikelKategorieDAO().findAll();
+			System.out.println("SQL!");
+		}else if(workWith.equals("NoSQL")) {
+			System.out.println("NOSQL!");
+			//TODO: NoSQL DB code....
+		}
+		
 
 		if (kategorieIDStr != null) {
 			kategorieID = Integer.parseInt(kategorieIDStr);
@@ -84,34 +111,39 @@ public class HomeController extends HttpServlet {
 		}
 		
 		//Search from searchbar
-		if (searchText == null || searchText.isEmpty()) {
+		if ((searchText == null || searchText.isEmpty()) && workWith.equals("SQL")) {
 			artikelList = db.getArtikelDAO().findAll();
+			System.out.println(1);
 		} 
-		else {
+		else if(workWith.equals("SQL")){
 			artikelList = db.getArtikelDAO().sortWithKeyword(searchText);
+			System.out.println(2);
 		}
 		
 		Kategorie kategorie = db.getKategorieDAO().findById(kategorieID);
 		
 		//list anhand nur kategorie
-		if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0)) {
+		if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0) && workWith.equals("SQL")) {
 			listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
 			artikelList = new ArrayList<>();
 			artikelList = db.getArtikelDAO().sortWithCategory(kategorieID);
+			System.out.println(3);
 		}
 		
-		if (unterkategorieID != 11 && unterkategorieID != 0) {
+		if (unterkategorieID != 11 && unterkategorieID != 0 && workWith.equals("SQL")) {
 			Unterkategorie unterkategorie = db.getUnterkategorieDAO().findById(unterkategorieID);
-			
+			System.out.println(4);
 			//list anhand beide unterkategorie und kategorie
-			if (categorySet) {
+			if (categorySet && workWith.equals("SQL")) {
 				listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
 				artikelList = db.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
+				System.out.println(5);
 			} 
 			//list anhand nur unterkategorie
-			else {
+			else if(workWith.equals("SQL")){
 				listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
 				artikelList = db.getArtikelDAO().sortWithUndercategory(unterkategorieID);
+				System.out.println(6);
 			}
 
 		}
