@@ -25,14 +25,7 @@ public class BestellungDAO implements DAO<Bestellung> {
 	public int create(Bestellung b) {
 		
 		try {
-//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//			Calendar cal = Calendar.getInstance();
-//			
-//			int day = Calendar.DAY_OF_MONTH + 5;
-//			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
-//			
-//			Date d = cal.getTime();
-//			String date = df.format(d);
+
 			
 			String sql = (null+", "+null+", '"+b.getLieferdatum()+"', '"+b.getSumme()+"', '"+b.getAccountId()+"'");
 		    PreparedStatement pstmt = (PreparedStatement) db.getConnection().prepareStatement("INSERT INTO bestellung VALUES("+ sql +");");

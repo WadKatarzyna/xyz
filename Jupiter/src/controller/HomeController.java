@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
+import daoNoSQL.GenericDAO;
 import model.Account;
 import model.Artikel;
 import model.ArtikelKategorie;
@@ -28,12 +30,16 @@ import model.WarenkorbArtikel;
 
 /**
  * Servlet implementation class HomeController
+ * @param <T>
  */
 @WebServlet("/home")
-public class HomeController extends HttpServlet {
+public class HomeController<T> extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	DBManager db = DBManager.getInstance();
+    
+	//SQL DBManager
+	DBManager daoSQL = DBManager.getInstance();
+	//NoSQL DBManager
+	GenericDAO<T> daoNoSQL = new GenericDAO<>();
 
 	
 	
@@ -42,23 +48,28 @@ public class HomeController extends HttpServlet {
      */
     public HomeController() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	
+	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-	      Cookie[] cookies = request.getCookies();
-	      String workWith = "";
+		/**
+		 * Entscheidungspunkt...
+		 * SQL oder NoSQL
+		 */
+		Cookie[] cookies = request.getCookies();
+		String workWith = "";
 
-	        for(int i = 0; i < cookies.length; i++) { 
-	            Cookie c = cookies[i];
-	            if (c.getName().equals("DB")) {
-	                workWith = c.getValue();
-	            }
-	        }
+        for(int i = 0; i < cookies.length; i++) { 
+            Cookie c = cookies[i];
+            if (c.getName().equals("DB")) {
+                workWith = c.getValue();
+            }
+        }
 	        
 	        
 		
@@ -85,285 +96,560 @@ public class HomeController extends HttpServlet {
 		List<BestellteArtikel> bestelleArtikelList = new ArrayList<>();
 		List<Unterkategorie> unterkategorieList = new ArrayList<>();
 		List<ArtikelKategorie> artikelKategorieList = new ArrayList<>();
+		List<Artikel> warenkorbartikellist = new ArrayList<>();
+		Warenkorb warenkorb = null;
+		Kategorie kategorie = null;
 		
 		if(workWith.equals("SQL")) {
-			kategorieList = db.getKategorieDAO().findAll();
-			herstellerList = db.getHerstellerDAO().findAll();
-			bestelleArtikelList = db.getBestellteArtikelDAO().findAll();
-			unterkategorieList = db.getUnterkategorieDAO().findAll();
-			artikelKategorieList = db.getArtikelKategorieDAO().findAll();
-			System.out.println("SQL!");
-		}else if(workWith.equals("NoSQL")) {
-			System.out.println("NOSQL!");
-			//TODO: NoSQL DB code....
-		}
-		
+			System.out.println("working with SQL-DB");
+			
+			kategorieList = daoSQL.getKategorieDAO().findAll();
+			herstellerList = daoSQL.getHerstellerDAO().findAll();
+			bestelleArtikelList = daoSQL.getBestellteArtikelDAO().findAll();
+			unterkategorieList = daoSQL.getUnterkategorieDAO().findAll();
+			artikelKategorieList = daoSQL.getArtikelKategorieDAO().findAll();
+				
 
-		if (kategorieIDStr != null) {
-			kategorieID = Integer.parseInt(kategorieIDStr);
-			if (kategorieID != 11)
-				categorySet = true;
-		}
-		
-		if (unterkategorieIDStr != null) {
-			unterkategorieID = Integer.parseInt(unterkategorieIDStr);
-		}
-		
-		//Search from searchbar
-		if ((searchText == null || searchText.isEmpty()) && workWith.equals("SQL")) {
-			artikelList = db.getArtikelDAO().findAll();
-			System.out.println(1);
-		} 
-		else if(workWith.equals("SQL")){
-			artikelList = db.getArtikelDAO().sortWithKeyword(searchText);
-			System.out.println(2);
-		}
-		
-		Kategorie kategorie = db.getKategorieDAO().findById(kategorieID);
-		
-		//list anhand nur kategorie
-		if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0) && workWith.equals("SQL")) {
-			listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
-			artikelList = new ArrayList<>();
-			artikelList = db.getArtikelDAO().sortWithCategory(kategorieID);
-			System.out.println(3);
-		}
-		
-		if (unterkategorieID != 11 && unterkategorieID != 0 && workWith.equals("SQL")) {
-			Unterkategorie unterkategorie = db.getUnterkategorieDAO().findById(unterkategorieID);
-			System.out.println(4);
-			//list anhand beide unterkategorie und kategorie
-			if (categorySet && workWith.equals("SQL")) {
-				listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
-				artikelList = db.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
-				System.out.println(5);
+			if (kategorieIDStr != null) {
+				kategorieID = Integer.parseInt(kategorieIDStr);
+				if (kategorieID != 11)
+					categorySet = true;
+			}
+			
+			if (unterkategorieIDStr != null) {
+				unterkategorieID = Integer.parseInt(unterkategorieIDStr);
+			}
+			
+			//Search from searchbar
+			if ((searchText == null || searchText.isEmpty())) {
+				artikelList = daoSQL.getArtikelDAO().findAll();
+				System.out.println(1);
 			} 
-			//list anhand nur unterkategorie
-			else if(workWith.equals("SQL")){
-				listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
-				artikelList = db.getArtikelDAO().sortWithUndercategory(unterkategorieID);
-				System.out.println(6);
+			else {
+				artikelList = daoSQL.getArtikelDAO().sortWithKeyword(searchText);
+				System.out.println(2);
 			}
 
-		}
-		
-		
-		request.setAttribute("artikelList", artikelList);
-		request.setAttribute("herstellerList", herstellerList);
-		request.setAttribute("bestelleArtikelList", bestelleArtikelList);
-		request.setAttribute("kategorieList", kategorieList);
-		request.setAttribute("listedItemsKeyword", listedItemsKeyword);
-		request.setAttribute("unterkategorieList", unterkategorieList);
-		
-		
-		if(account != null) {
-			List<Artikel> warenkorbartikellist = new ArrayList<>();
-			request.setAttribute("warenkorbArtikel", db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId()));
 			
-			for(WarenkorbArtikel w: db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId())){
-				for(Artikel a : db.getArtikelDAO().findAll()) {
-					if(w.getArtikelid() == a.getId()) {
-						warenkorbartikellist.add(a);
+			
+			kategorie = daoSQL.getKategorieDAO().findById(kategorieID);
+			
+			//list anhand nur kategorie
+			if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0)) {
+				listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
+				artikelList = new ArrayList<>();
+				artikelList = daoSQL.getArtikelDAO().sortWithCategory(kategorieID);
+				System.out.println(3);
+			}
+			
+			if (unterkategorieID != 11 && unterkategorieID != 0) {
+				Unterkategorie unterkategorie = daoSQL.getUnterkategorieDAO().findById(unterkategorieID);
+				System.out.println(4);
+				//list anhand beide unterkategorie und kategorie
+				if (categorySet) {
+					listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
+					artikelList = daoSQL.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
+					System.out.println(5);
+				} 
+				//list anhand nur unterkategorie
+				else {
+					listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
+					artikelList = daoSQL.getArtikelDAO().sortWithUndercategory(unterkategorieID);
+					System.out.println(6);
+				}
+
+			}
+			
+			if(account != null) {
+				
+				request.setAttribute("warenkorbArtikel", daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId()));
+				
+				for(WarenkorbArtikel w: daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId())){
+					for(Artikel a : daoSQL.getArtikelDAO().findAll()) {
+						if(w.getArtikelid() == a.getId()) {
+							warenkorbartikellist.add(a);
+						}
+					}
+				}
+				
+				for(Warenkorb w : daoSQL.getWarenkorbDAO().findAll()) {
+					if(account.getId() == w.getAccountId()) {
+						warenkorb = w;
 					}
 				}
 			}
-			request.setAttribute("warenkorbartikellist", warenkorbartikellist);
-			Warenkorb warenkorb = null;
-			for(Warenkorb w : db.getWarenkorbDAO().findAll()) {
-				if(account.getId() == w.getAccountId()) {
-					warenkorb = w;
-				}
+			
+			/***
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 */
+		}else if(workWith.equals("NoSQL")) {
+			System.out.println("working with NoSQL-DB");
+			
+			kategorieList = (List<Kategorie>) daoNoSQL.getAll(Kategorie.class);
+			herstellerList = (List<Hersteller>) daoNoSQL.getAll(Hersteller.class);
+			bestelleArtikelList = (List<BestellteArtikel>) daoNoSQL.getAll(BestellteArtikel.class);
+			unterkategorieList = (List<Unterkategorie>) daoNoSQL.getAll(Unterkategorie.class);
+			artikelKategorieList = (List<ArtikelKategorie>) daoNoSQL.getAll(ArtikelKategorie.class);
+			
+
+			if (kategorieIDStr != null) {
+				kategorieID = Integer.parseInt(kategorieIDStr);
+				if (kategorieID != 11)
+					categorySet = true;
 			}
 			
-			request.setAttribute("warennkorb",warenkorb);
+			if (unterkategorieIDStr != null) {
+				unterkategorieID = Integer.parseInt(unterkategorieIDStr);
+			}
+			
+			//Search from searchbar
+			if ((searchText == null || searchText.isEmpty())) {
+				artikelList = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+			} 
+			else {
+				//TODO: create a new nosql method for this
+				artikelList = daoSQL.getArtikelDAO().sortWithKeyword(searchText);
+			}
+
+			
+			kategorie = (Kategorie) daoNoSQL.getOneById(Kategorie.class, kategorieID);
+			
+			//list anhand nur kategorie
+			if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0)) {
+				listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
+				artikelList = new ArrayList<>();
+				//TODO: change to nosql
+				artikelList = daoSQL.getArtikelDAO().sortWithCategory(kategorieID);
+			}
+			
+			if (unterkategorieID != 11 && unterkategorieID != 0) {
+				Unterkategorie unterkategorie = (Unterkategorie) daoNoSQL.getOneById(Unterkategorie.class, unterkategorieID);
+
+				//list anhand beide unterkategorie und kategorie
+				if (categorySet) {
+					listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
+					//TODO: change to nosql
+					artikelList = daoSQL.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
+				
+				} 
+				//list anhand nur unterkategorie
+				else {
+					listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
+					//TODO:change to nosql
+					artikelList = daoSQL.getArtikelDAO().sortWithUndercategory(unterkategorieID);
+				}
+
+			}
+			
+			
+
+			
+			
+			if(account != null) {
+				//TODO:change to nosql
+				request.setAttribute("warenkorbArtikel", daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId()));
+				//TODO:change to nosql
+				for(WarenkorbArtikel w: daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId())){
+					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+					for(Artikel a : artikellist) {
+						if(w.getArtikelid() == a.getId()) {
+							warenkorbartikellist.add(a);
+						}
+					}
+				}
+				
+				List<Warenkorb> warenkorblist = (List<Warenkorb>) daoNoSQL.getAll(Warenkorb.class);
+				for(Warenkorb w : warenkorblist) {
+					if(account.getId() == w.getAccountId()) {
+						warenkorb = w;
+					}
+				}
 		}
+		
+	}
+		
+			request.setAttribute("artikelList", artikelList);
+			request.setAttribute("herstellerList", herstellerList);
+			request.setAttribute("bestelleArtikelList", bestelleArtikelList);
+			request.setAttribute("kategorieList", kategorieList);
+			request.setAttribute("listedItemsKeyword", listedItemsKeyword);
+			request.setAttribute("unterkategorieList", unterkategorieList);
+			request.setAttribute("warenkorbartikellist", warenkorbartikellist);
+			
+			request.setAttribute("warennkorb",warenkorb);
+		
+			
 		
 		
 		request.getRequestDispatcher("/WEB-INF/home.jsp").forward(request, response);
 	}
 	
 	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+
+	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		
-		if(request.getParameter("typ").equals("cart")){
-			//to cart
-			
-			boolean oldElement = false;
-			
-			String accountId = request.getParameter("accountId");
-			if (accountId == null || accountId.isEmpty()) {
-				accountId = "1"; //default
-			}
-			
-			
-			//finde warenkorb für die account
-			List<Warenkorb> warenkorbList = db.getWarenkorbDAO().findAll();
-			Warenkorb warenkorb = null;
-			for(Warenkorb w : warenkorbList) {
-				if(w.getAccountId()== Integer.parseInt(accountId)) {
-					warenkorb = w;
-				}
-			}
-					
-			//erstelle warenkorb
-			if (warenkorb == null) {
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-				String date = df.format(new Date());
-				
-				warenkorb = new Warenkorb();
-				warenkorb.setAccountId(Integer.parseInt(accountId));
-				warenkorb.setErstelldatum(date);
-				warenkorb.setId(db.getWarenkorbDAO().create(warenkorb));
-				/*
-				WarenkorbArtikel warenkorbArtikel = new WarenkorbArtikel();
-				warenkorbArtikel.setWarenkorbid(db.getWarenkorbDAO().findWarenkorbByCustomerId(Integer.parseInt(accountId)));
-				warenkorbArtikel.setMenge(0);
-				warenkorbArtikel.setSumme(0);
-				*/
-				
-			}
-			
-			
-			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
-			
-			//List<WarenkorbArtikel> warenkorbartikellist = db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
-			
-		
-			
+		/**
+		 * Entscheidungspunkt...
+		 * SQL oder NoSQL
+		 */
+		Cookie[] cookies = request.getCookies();
+		String workWith = "";
 
-			
-			
-			
-			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
-				if(a.getArtikelid() == artikelId) {
-					oldElement = true;
-					
-					for(Artikel artikel : db.getArtikelDAO().findAll()) {
-						if(artikel.getId()== artikelId) {
-							a.setSumme(artikel.getPreis());
-							
-						}
-					}
-					
-					
-					db.getWarenkorbArtikelDAO().update(a);
-				}
-			}
-			
-			//wenn keine aritkel im warenkorb..
-			if (!oldElement) {
-				WarenkorbArtikel warenkorbartikel = new WarenkorbArtikel();
-				warenkorbartikel.setWarenkorbid(warenkorb.getId());
-				warenkorbartikel.setArtikelid(artikelId);
-				warenkorbartikel.setMenge(1);
+        for(int i = 0; i < cookies.length; i++) { 
+            Cookie c = cookies[i];
+            if (c.getName().equals("DB")) {
+                workWith = c.getValue();
+            }
+        }
+        
+        if(workWith.equals("SQL")) {
+	        	if(request.getParameter("typ").equals("cart")){
+	    			//to cart
+	    			
+	    			boolean oldElement = false;
+	    			
+	    			String accountId = request.getParameter("accountId");
+	    			if (accountId == null || accountId.isEmpty()) {
+	    				accountId = "1"; //default
+	    			}
+	    			
+	    			
+	    			//finde warenkorb für die account
+	    			List<Warenkorb> warenkorbList = daoSQL.getWarenkorbDAO().findAll();
+	    			Warenkorb warenkorb = null;
+	    			for(Warenkorb w : warenkorbList) {
+	    				if(w.getAccountId()== Integer.parseInt(accountId)) {
+	    					warenkorb = w;
+	    				}
+	    			}
+	    					
+	    			//erstelle warenkorb
+	    			if (warenkorb == null) {
+	    				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    				String date = df.format(new Date());
+	    				
+	    				warenkorb = new Warenkorb();
+	    				warenkorb.setAccountId(Integer.parseInt(accountId));
+	    				warenkorb.setErstelldatum(date);
+	    				warenkorb.setId(daoSQL.getWarenkorbDAO().create(warenkorb));
+	    				
+	    				
+	    			}
+	    			
+	    			
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			
+	    			
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					oldElement = true;
+	    					
+	    					for(Artikel artikel : daoSQL.getArtikelDAO().findAll()) {
+	    						if(artikel.getId()== artikelId) {
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					
+	    					
+	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    				}
+	    			}
+	    			
+	    			//wenn keine artikel im warenkorb..
+	    			if (!oldElement) {
+	    				WarenkorbArtikel warenkorbartikel = new WarenkorbArtikel();
+	    				warenkorbartikel.setWarenkorbid(warenkorb.getId());
+	    				warenkorbartikel.setArtikelid(artikelId);
+	    				warenkorbartikel.setMenge(1);
+	    				
+	    				for(Artikel a : daoSQL.getArtikelDAO().findAll()) {
+	    					if(a.getId()== artikelId) {
+	    						warenkorbartikel.setSumme(a.getPreis());
+	    						
+	    					}
+	    				}
+	    				
+	    				daoSQL.getWarenkorbArtikelDAO().create(warenkorbartikel);
+	    			}
+	
+	    		}else if(request.getParameter("typ").equals("remove")){
+	    			
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(artikelId);
+	    			
+	    		}else if(request.getParameter("typ").equals("increase")){
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			String accountId = request.getParameter("accountId");
+	
+	    			
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					
+	    					for(Artikel artikel : daoSQL.getArtikelDAO().findAll()) {
+	    						if(artikel.getId()== artikelId) {
+	    							
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    				}
+	    			}
+	    			
+	    		}else if(request.getParameter("typ").equals("decrease")) {
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			String accountId = request.getParameter("accountId");
+	    			
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					
+	    					for(Artikel artikel : daoSQL.getArtikelDAO().findAll()) {
+	    						if(artikel.getId()== artikelId) {
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					
+	    					daoSQL.getWarenkorbArtikelDAO().updateDecrease(a);
+	    				}
+	    			}
+	    			
+	    		}else if(request.getParameter("typ").equals("checkout")) {
+	    			
+	    			System.out.println("in checkout");
+	    			
+	    			String accountId = request.getParameter("accountId");
+	    			Double total = Double.parseDouble(request.getParameter("total"));
+	    			
+	    			
+	    			List<WarenkorbArtikel> warenkorbArtikelList = daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
+	    			
+	    			Bestellung bestellung = new Bestellung();
+	    			bestellung.setSumme(total);
+	    			
+	    			//lieferdatum = heute + 5 tage
+	    			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    			Calendar cal = Calendar.getInstance();
+	    			
+	    			int day = Calendar.DAY_OF_MONTH + 5;
+	    			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
+	    			
+	    			Date d = cal.getTime();
+	    			String date = df.format(d);
+	    			
+	    			bestellung.setLieferdatum(date);
+	    			bestellung.setAccountId(Integer.parseInt(accountId));
+	    			int bestellungID = daoSQL.getBestellungDAO().create(bestellung);
+	    			
+	    			
+	    			for(WarenkorbArtikel w : warenkorbArtikelList) {
+	    				BestellteArtikel ba = new BestellteArtikel();
+	    				ba.setBestellungId(bestellungID);
+	    				ba.setArtikelId(w.getArtikelid());
+	    				ba.setMenge(w.getMenge());
+	    				for(Artikel a : daoSQL.getArtikelDAO().findAll()) {
+	    					if(a.getId() == w.getArtikelid()) {
+	    						ba.setPreis(a.getPreis());
+	    					}
+	    				}
+	    				daoSQL.getBestellteArtikelDAO().create(ba);
+	    			}
+	    			
+	    			//lösche warenkorb nach bestellung
+	    			for(WarenkorbArtikel wa : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(wa.getArtikelid());
+	    			}
+    			
+	    		}
+        }else if(workWith.equals("NoSQL")) {
+        		
+	        	if(request.getParameter("typ").equals("cart")){
+	    			//to cart
+	    			
+	    			boolean oldElement = false;
+	    			
+	    			String accountId = request.getParameter("accountId");
+	    			if (accountId == null || accountId.isEmpty()) {
+	    				accountId = "1"; //default
+	    			}
+	    			
+	    			
+	    			//finde warenkorb für die account
+	    			List<Warenkorb> warenkorbList = (List<Warenkorb>) daoNoSQL.getAll(Warenkorb.class);
+	    			Warenkorb warenkorb = null;
+	    			for(Warenkorb w : warenkorbList) {
+	    				if(w.getAccountId()== Integer.parseInt(accountId)) {
+	    					warenkorb = w;
+	    				}
+	    			}
+	    					
+	    			//erstelle warenkorb
+	    			if (warenkorb == null) {
+	    				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    				String date = df.format(new Date());
+	    				
+	    				warenkorb = new Warenkorb();
+	    				warenkorb.setAccountId(Integer.parseInt(accountId));
+	    				warenkorb.setErstelldatum(date);
+	    				//TODO:
+	    				warenkorb.setId(daoSQL.getWarenkorbDAO().create(warenkorb));
+	    			
+	    				
+	    			}
+	    			
+	    			
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			
+	    			
+	    			//TODO:
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					oldElement = true;
+	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+	    					for(Artikel artikel : artikellist) {
+	    						if(artikel.getId()== artikelId) {
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					
+	    					//TODO:
+	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    				}
+	    			}
+	    			
+	    			//wenn keine artikel im warenkorb..
+	    			if (!oldElement) {
+	    				WarenkorbArtikel warenkorbartikel = new WarenkorbArtikel();
+	    				warenkorbartikel.setWarenkorbid(warenkorb.getId());
+	    				warenkorbartikel.setArtikelid(artikelId);
+	    				warenkorbartikel.setMenge(1);
+	    				
+	    				List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+	    				for(Artikel a : artikellist) {
+	    					if(a.getId()== artikelId) {
+	    						warenkorbartikel.setSumme(a.getPreis());
+	    						
+	    					}
+	    				}
+	    				//TODO:
+	    				daoSQL.getWarenkorbArtikelDAO().create(warenkorbartikel);
+	    			}
+	
+	    		}else if(request.getParameter("typ").equals("remove")){
+	    			
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			//TODO:
+	    			daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(artikelId);
+	    			
+	    		}else if(request.getParameter("typ").equals("increase")){
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			String accountId = request.getParameter("accountId");
+	
+	    			//TODO:
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					
+	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+	    					for(Artikel artikel : artikellist) {
+	    						if(artikel.getId()== artikelId) {
+	    							
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					//TODO:
+	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    				}
+	    			}
+	    			
+	    		}else if(request.getParameter("typ").equals("decrease")) {
+	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
+	    			String accountId = request.getParameter("accountId");
+	    			
+	    			//TODO:
+	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				if(a.getArtikelid() == artikelId) {
+	    					
+	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+	    					for(Artikel artikel : artikellist) {
+	    						if(artikel.getId()== artikelId) {
+	    							a.setSumme(artikel.getPreis());
+	    							
+	    						}
+	    					}
+	    					//TODO:
+	    					daoSQL.getWarenkorbArtikelDAO().updateDecrease(a);
+	    				}
+	    			}
+	    			
+	    		}else if(request.getParameter("typ").equals("checkout")) {
+	    			
+	    			System.out.println("in checkout");
+	    			
+	    			String accountId = request.getParameter("accountId");
+	    			Double total = Double.parseDouble(request.getParameter("total"));
+	    			
+	    			//TODO:
+	    			List<WarenkorbArtikel> warenkorbArtikelList = daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
+	    			
+	    			Bestellung bestellung = new Bestellung();
+	    			bestellung.setSumme(total);
+	    			
+	    			//lieferdatum = heute + 5 tage
+	    			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    			Calendar cal = Calendar.getInstance();
+	    			
+	    			int day = Calendar.DAY_OF_MONTH + 5;
+	    			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
+	    			
+	    			Date d = cal.getTime();
+	    			String date = df.format(d);
+	    			
+	    			bestellung.setLieferdatum(date);
+	    			bestellung.setAccountId(Integer.parseInt(accountId));
+	    			//TODO:
+	    			int bestellungID = daoSQL.getBestellungDAO().create(bestellung);
+	    			
+	    			
+	    			for(WarenkorbArtikel w : warenkorbArtikelList) {
+	    				BestellteArtikel ba = new BestellteArtikel();
+	    				ba.setBestellungId(bestellungID);
+	    				ba.setArtikelId(w.getArtikelid());
+	    				ba.setMenge(w.getMenge());
+	    				
+	    				List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
+	    				for(Artikel a : artikellist) {
+	    					if(a.getId() == w.getArtikelid()) {
+	    						ba.setPreis(a.getPreis());
+	    					}
+	    				}
+	    				daoNoSQL.create((T) ba);
+	    			}
+	    			
+	    			//lösche warenkorb nach bestellung
+	    			//TODO:
+	    			for(WarenkorbArtikel wa : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    				//TODO:
+	    				daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(wa.getArtikelid());
+	    			}
 				
-				for(Artikel a : db.getArtikelDAO().findAll()) {
-					if(a.getId()== artikelId) {
-						warenkorbartikel.setSumme(a.getPreis());
-						
-					}
-				}
-				
-				db.getWarenkorbArtikelDAO().create(warenkorbartikel);
-			}
-			
-			
-			
-			
-			
-			
-
-		}else if(request.getParameter("typ").equals("remove")){
-			
-			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
-			
-			
-			db.getWarenkorbArtikelDAO().deleteByarticleId(artikelId);
-			
-			
-		}else if(request.getParameter("typ").equals("increase")){
-			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
-			String accountId = request.getParameter("accountId");
-
-			
-			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
-				if(a.getArtikelid() == artikelId) {
-					
-					for(Artikel artikel : db.getArtikelDAO().findAll()) {
-						if(artikel.getId()== artikelId) {
-							
-							a.setSumme(artikel.getPreis());
-							
-						}
-					}
-					db.getWarenkorbArtikelDAO().update(a);
-				}
-			}
-			
-			
-		}else if(request.getParameter("typ").equals("decrease")) {
-			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
-			String accountId = request.getParameter("accountId");
-			
-			for( WarenkorbArtikel a : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
-				if(a.getArtikelid() == artikelId) {
-					
-					for(Artikel artikel : db.getArtikelDAO().findAll()) {
-						if(artikel.getId()== artikelId) {
-							a.setSumme(artikel.getPreis());
-							
-						}
-					}
-					
-					db.getWarenkorbArtikelDAO().updateDecrease(a);
-				}
-			}
-			
-		}else if(request.getParameter("typ").equals("checkout")) {
-			
-			System.out.println("in checkout");
-			
-			String accountId = request.getParameter("accountId");
-			Double total = Double.parseDouble(request.getParameter("total"));
-			
-			
-			List<WarenkorbArtikel> warenkorbArtikelList = db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
-			
-			Bestellung bestellung = new Bestellung();
-			bestellung.setSumme(total);
-			bestellung.setAccountId(Integer.parseInt(accountId));
-			int bestellungID = db.getBestellungDAO().create(bestellung);
-			
-			
-			for(WarenkorbArtikel w : warenkorbArtikelList) {
-				BestellteArtikel ba = new BestellteArtikel();
-				ba.setBestellungId(bestellungID);
-				ba.setArtikelId(w.getArtikelid());
-				ba.setMenge(w.getMenge());
-				for(Artikel a : db.getArtikelDAO().findAll()) {
-					if(a.getId() == w.getArtikelid()) {
-						ba.setPreis(a.getPreis());
-					}
-				}
-				db.getBestellteArtikelDAO().create(ba);
-			}
-			
-			
+	    		}
+        }
 		
 		
-			
-			//lösche warenkorb nach bestellung
-			for(WarenkorbArtikel wa : db.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
-				db.getWarenkorbArtikelDAO().deleteByarticleId(wa.getArtikelid());
-			}
-			
-			
-			
-		}
 		
 		
 		
