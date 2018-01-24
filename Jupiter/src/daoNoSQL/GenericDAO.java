@@ -34,7 +34,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		
 		this.gson = builder.create();
 		this.collection = DBManager.getDatabase().getCollection(object.getClass().getSimpleName());
-		this.collection.insertOne(Document.parse(gson.toJson(object)).append("id", NextId.getNextId(object.getClass().getSimpleName())));
+		this.collection.insertOne(Document.parse(gson.toJson(object)).append("_id", NextId.getNextId(object.getClass().getSimpleName())));
 			
 	}
 
@@ -51,7 +51,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		T object = null;
 		for(Document d : response){
-			if(d.getInteger("id") == id){
+			if(d.getInteger("_id") == id){
 				try {
 					object = (T) mapper.readValue(d.toJson(), clazz);
 					
@@ -74,13 +74,15 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		for(Document d : response){
-			try {
-				output.add((T) mapper.readValue(d.toJson().toString(), clazz));
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+		if(!response.isEmpty()) {
+			for(Document d : response){
+				try {
+					output.add((T) mapper.readValue(d.toJson().toString(), clazz));
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
 		}
 		
 		return output;

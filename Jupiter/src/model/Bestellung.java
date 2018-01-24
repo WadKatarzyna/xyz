@@ -1,12 +1,10 @@
 package model;
 
-import java.util.Date;
-
 public class Bestellung {
 
 	private int id;
 	private String bestellzeitpunkt;
-	private Date lieferdatum;
+	private String lieferdatum;
 	private double summe;
 	private int accountId;
 	
@@ -38,13 +36,13 @@ public class Bestellung {
 	/**
 	 * @return the lieferdatum
 	 */
-	public Date getLieferdatum() {
+	public String getLieferdatum() {
 		return lieferdatum;
 	}
 	/**
 	 * @param lieferdatum the lieferdatum to set
 	 */
-	public void setLieferdatum(Date lieferdatum) {
+	public void setLieferdatum(String lieferdatum) {
 		this.lieferdatum = lieferdatum;
 	}
 	/**

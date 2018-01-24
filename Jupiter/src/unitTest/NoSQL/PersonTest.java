@@ -13,11 +13,16 @@ public class PersonTest {
 	@Test
 	public void createTest() {
 		Person p = new Person();
-		p.setVorname("Katarzyna");
+		p.setVorname("Katarzyna2");
 		p.setNachname("Wadowska");
 		p.setEmail("info@jupiter.com");
 		p.setGeschlecht("weiblich");
 		
-		dao.create(p);
+	//	dao.create(p);
+	}
+	
+	@Test
+	public void getAllTest() {
+		dao.getAll(Person.class);
 	}
 }

@@ -2,6 +2,8 @@ package model;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 
 /**
  * 
@@ -14,7 +16,8 @@ public class Person {
 	private String vorname;
 	private String nachname;
 	private String geschlecht;
-	private Date geburtsdatum;
+	
+	private String geburtsdatum;
 	private String email;
 	private int rolle;
 	
@@ -71,13 +74,13 @@ public class Person {
 	/**
 	 * @return the geburtsdatum
 	 */
-	public Date getGeburtsdatum() {
+	public String getGeburtsdatum() {
 		return geburtsdatum;
 	}
 	/**
 	 * @param geburtsdatum the geburtsdatum to set
 	 */
-	public void setGeburtsdatum(Date geburtsdatum) {
+	public void setGeburtsdatum(String geburtsdatum) {
 		this.geburtsdatum = geburtsdatum;
 	}
 

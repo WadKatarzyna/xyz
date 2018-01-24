@@ -3,9 +3,8 @@ package dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mysql.jdbc.PreparedStatement;
@@ -34,10 +33,10 @@ public class PersonDAO implements DAO<Person>{
 	@Override
 	public int create(Person p) {
 		try {
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			String date = df.format(p.getGeburtsdatum());
+//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//			String date = df.format(p.getGeburtsdatum());
 			
-			String sql = (null+", '"+p.getVorname()+"', '"+p.getNachname()+"', '"+p.getGeschlecht()+"', '"+date+"',"
+			String sql = (null+", '"+p.getVorname()+"', '"+p.getNachname()+"', '"+p.getGeschlecht()+"', '"+p.getGeburtsdatum()+"',"
 					+ " '"+p.getEmail()+"', 2");  // 2 für user ( standardmäßig werden einträge als user gespeichert)
 												 // 1 für admin... siehe rolle tabelle
 			
@@ -85,8 +84,18 @@ public class PersonDAO implements DAO<Person>{
 
 	@Override
 	public List<Person> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Person> output = new ArrayList<>();
+		try {
+			ResultSet result = db.getConnection().createStatement()
+					.executeQuery("select * from person order by person_personalnr");
+
+			while (result.next())
+				output.add(parse(result));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 
 	@Override
@@ -108,7 +117,7 @@ public class PersonDAO implements DAO<Person>{
 		person.setVorname(result.getString("person_vorname"));
 		person.setNachname(result.getString("person_nachname"));
 		person.setGeschlecht(result.getString("person_geschlecht"));
-		person.setGeburtsdatum(result.getDate("person_geburtsdatum"));
+		person.setGeburtsdatum(result.getString("person_geburtsdatum"));
 		person.setEmail(result.getString("person_email"));
 		person.setRolle(result.getInt("person_rolle_id"));
 

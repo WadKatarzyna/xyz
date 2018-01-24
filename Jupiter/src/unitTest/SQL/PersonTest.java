@@ -25,7 +25,7 @@ public class PersonTest {
 		p.setVorname("Kasia");
 		p.setNachname("Wadowska");
 		p.setGeschlecht("weiblich");
-		p.setGeburtsdatum(new Date());
+		
 		p.setEmail("test@mail.com");
 		p.setRolle(2);
 		db.getPersonDAO().create(p);

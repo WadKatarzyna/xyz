@@ -31,8 +31,8 @@ public class NextId {
 			nextid = 0;
 		}else{
 			for(Document document: list){
-				if(nextid < document.getInteger("id")){
-					nextid = document.getInteger("id");
+				if(nextid < document.getInteger("_id")){
+					nextid = document.getInteger("_id");
 				}
 			}
 		}

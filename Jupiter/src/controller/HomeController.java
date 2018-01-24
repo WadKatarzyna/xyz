@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,20 +14,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.ArtikelDAO;
-import dao.BestellteArtikelDAO;
 import dao.DBManager;
-import dao.HerstellerDAO;
 import model.Account;
 import model.Artikel;
 import model.ArtikelKategorie;
 import model.BestellteArtikel;
 import model.Bestellung;
 import model.Hersteller;
-import model.Warenkorb;
-import model.WarenkorbArtikel;
 import model.Kategorie;
 import model.Unterkategorie;
+import model.Warenkorb;
+import model.WarenkorbArtikel;
 
 /**
  * Servlet implementation class HomeController
@@ -212,9 +211,12 @@ public class HomeController extends HttpServlet {
 					
 			//erstelle warenkorb
 			if (warenkorb == null) {
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				String date = df.format(new Date());
+				
 				warenkorb = new Warenkorb();
 				warenkorb.setAccountId(Integer.parseInt(accountId));
-				warenkorb.setErstelldatum(new Date());
+				warenkorb.setErstelldatum(date);
 				warenkorb.setId(db.getWarenkorbDAO().create(warenkorb));
 				/*
 				WarenkorbArtikel warenkorbArtikel = new WarenkorbArtikel();

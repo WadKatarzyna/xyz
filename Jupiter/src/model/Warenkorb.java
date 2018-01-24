@@ -5,7 +5,7 @@ import java.util.Date;
 public class Warenkorb {
 	
 	private int id;
-	private Date erstelldatum;
+	private String erstelldatum;
 	private int accountId;
 	
 	
@@ -24,13 +24,13 @@ public class Warenkorb {
 	/**
 	 * @return the erstelldatum
 	 */
-	public Date getErstelldatum() {
+	public String getErstelldatum() {
 		return erstelldatum;
 	}
 	/**
 	 * @param erstelldatum the erstelldatum to set
 	 */
-	public void setErstelldatum(Date erstelldatum) {
+	public void setErstelldatum(String erstelldatum) {
 		this.erstelldatum = erstelldatum;
 	}
 	/**

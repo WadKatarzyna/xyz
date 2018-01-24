@@ -61,6 +61,7 @@ public class ArtikelKategorieDAO implements DAO<ArtikelKategorie> {
 		
 		ak.setArtikel_id(result.getInt("artikelkategorie_artikel_id"));
 		ak.setKategorie_id(result.getInt("artikelkategorie_kategorie_id"));
+		ak.setUnterkategorie_id(result.getInt("artikelkategorie_unterkategorie_id"));
 		
 		return ak;
 		

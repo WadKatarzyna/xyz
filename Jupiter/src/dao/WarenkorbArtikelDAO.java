@@ -8,6 +8,7 @@ import java.util.List;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
+import model.Person;
 import model.WarenkorbArtikel;
 
 public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
@@ -57,8 +58,18 @@ public class WarenkorbArtikelDAO implements DAO<WarenkorbArtikel> {
 
 	@Override
 	public List<WarenkorbArtikel> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<WarenkorbArtikel> output = new ArrayList<>();
+		try {
+			ResultSet result = db.getConnection().createStatement()
+					.executeQuery("select * from warenkorbArtikel order by warenkorbArtikel_id");
+
+			while (result.next())
+				output.add(parse(result));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 
 	@Override

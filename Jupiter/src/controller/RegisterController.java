@@ -59,7 +59,7 @@ public class RegisterController extends HttpServlet {
 			
 			person.setVorname(request.getParameter("vorname"));
 			person.setNachname(request.getParameter("nachname"));
-			person.setGeburtsdatum(date);
+			person.setGeburtsdatum(gebDatum);
 			person.setGeschlecht(request.getParameter("geschlecht"));
 			person.setEmail(request.getParameter("email"));
 			

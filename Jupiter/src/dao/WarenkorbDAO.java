@@ -23,13 +23,9 @@ public class WarenkorbDAO implements DAO<Warenkorb> {
 	@Override
 	public int create(Warenkorb w) {
 		try {
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			String date = df.format(w.getErstelldatum());
+
 			
-			System.out.println("date: "+ date);
-			System.out.println(w.getAccountId());
-			
-			String sql = (null+", '"+date+"', '"+w.getAccountId()+"'");
+			String sql = (null+", '"+w.getErstelldatum()+"', '"+w.getAccountId()+"'");
 			
 
 			
@@ -107,6 +103,7 @@ public class WarenkorbDAO implements DAO<Warenkorb> {
 	private Warenkorb parse(ResultSet result) throws SQLException {
 		Warenkorb w = new Warenkorb();
 		w.setId(result.getInt("warenkorb_id"));
+		w.setErstelldatum(result.getString("warenkorb_erstelldatum"));
 		w.setAccountId(result.getInt("warenkorb_account_id"));
 		
 		

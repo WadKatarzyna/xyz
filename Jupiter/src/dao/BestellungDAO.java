@@ -2,9 +2,8 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,16 +25,16 @@ public class BestellungDAO implements DAO<Bestellung> {
 	public int create(Bestellung b) {
 		
 		try {
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar cal = Calendar.getInstance();
+//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//			Calendar cal = Calendar.getInstance();
+//			
+//			int day = Calendar.DAY_OF_MONTH + 5;
+//			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
+//			
+//			Date d = cal.getTime();
+//			String date = df.format(d);
 			
-			int day = Calendar.DAY_OF_MONTH + 5;
-			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
-			
-			Date d = cal.getTime();
-			String date = df.format(d);
-			
-			String sql = (null+", "+null+", '"+date+"', '"+b.getSumme()+"', '"+b.getAccountId()+"'");
+			String sql = (null+", "+null+", '"+b.getLieferdatum()+"', '"+b.getSumme()+"', '"+b.getAccountId()+"'");
 		    PreparedStatement pstmt = (PreparedStatement) db.getConnection().prepareStatement("INSERT INTO bestellung VALUES("+ sql +");");
 		    pstmt.executeUpdate();
 		    
@@ -70,8 +69,18 @@ public class BestellungDAO implements DAO<Bestellung> {
 
 	@Override
 	public List<Bestellung> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Bestellung> output = new ArrayList<>();
+		try {
+			ResultSet result = db.getConnection().createStatement()
+					.executeQuery("select * from bestellung order by bestellung_id");
+
+			while (result.next())
+				output.add(parse(result));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 
 	@Override
@@ -83,6 +92,20 @@ public class BestellungDAO implements DAO<Bestellung> {
 	@Override
 	public void delete(Bestellung object) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	private Bestellung parse(ResultSet result) throws SQLException {
+		Bestellung bestellung = new Bestellung();
+		bestellung.setId(result.getInt("bestellung_id"));
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String date  = dateFormat.format(result.getTimestamp("bestellung_bestellzeitpunkt"));
+		bestellung.setBestellzeitpunkt(date);
+		bestellung.setLieferdatum(result.getString("bestellung_lieferdatum"));
+		bestellung.setSumme(result.getInt("bestellung_summe"));
+		bestellung.setAccountId(result.getInt("bestellung_account_id"));
+		
+		return bestellung;
 		
 	}
 
