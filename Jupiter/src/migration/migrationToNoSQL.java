@@ -12,6 +12,7 @@ import model.BestellteArtikel;
 import model.Bestellung;
 import model.Hersteller;
 import model.Kategorie;
+import model.Unterkategorie;
 import model.Person;
 import model.Warenkorb;
 import model.WarenkorbArtikel;
@@ -179,6 +180,26 @@ public class migrationToNoSQL {
 			}
 			if(!found) {
 				daoNoSQL.create((T) kategorieSQL);
+			}
+		}
+		
+		/**
+		 * unterkategorie migration
+		 */
+		List<Unterkategorie> unterkategorieListFromSQL = new ArrayList<>();
+		List<Unterkategorie> unterkategorieListFromNoSQL = new ArrayList<>();
+		unterkategorieListFromSQL   = daoSQL.getUnterkategorieDAO().findAll();
+		unterkategorieListFromNoSQL = (List<Unterkategorie>) daoNoSQL.getAll(Unterkategorie.class);
+		
+		for(Unterkategorie unterkategorieSQL : unterkategorieListFromSQL) {
+			Boolean found = false;
+			for(Unterkategorie unterkategorieNoSQL :unterkategorieListFromNoSQL) {
+				if(unterkategorieSQL.getId() == unterkategorieNoSQL.getId()) {
+					found = true;
+				}
+			}
+			if(!found) {
+				daoNoSQL.create((T) unterkategorieSQL);
 			}
 		}
 		
