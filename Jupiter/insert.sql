@@ -588,7 +588,7 @@ insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kate
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (25, 3, 5);
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (26, 1, 5);
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (27, 1, 5);
-insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (28, 2, 4);
+insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (28, 2, 5);
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (29, 3, 5);
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (30, 3, 2);
 insert into artikelkategorie (artikelkategorie_artikel_id, artikelkategorie_kategorie_id, artikelkategorie_unterkategorie_id) values (31, 1, 2);
