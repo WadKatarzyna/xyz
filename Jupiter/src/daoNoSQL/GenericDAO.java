@@ -123,6 +123,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 	
 	//non-overrided methods from here
 	
+	//updates WarenkorbArtikel und ERHOEHT die gesamte Menge und die Summe
 	public void updateWarenkorbArtikel(T object, int id, WarenkorbArtikel wa) {
 		int menge = 0;	
 		double summe = 0;
@@ -130,7 +131,6 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		this.collection = DBManager.getDatabase().getCollection(object.getClass().getSimpleName());
 		List<Document> response = collection.find().into(new ArrayList<Document>());
 		this.gson = builder.create();
-		
 		
 		for(Document d : response){
 			if (d.getInteger("warenkorbid") == wa.getWarenkorbid() && d.getInteger("artikelid") == wa.getArtikelid()) {
@@ -150,6 +150,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		}
 	}
 	
+	//updates WarenkorbArtikel und REDUZIERT die gesamte Menge und die Summe
 	public void updateDecrease(T object, int id, WarenkorbArtikel wa) {
 		int menge = 0;	
 		double summe = 0;
@@ -158,12 +159,10 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		List<Document> response = collection.find().into(new ArrayList<Document>());
 		this.gson = builder.create();
 		
-		
 		for(Document d : response){
 			if (d.getInteger("warenkorbid") == wa.getWarenkorbid() && d.getInteger("artikelid") == wa.getArtikelid()) {
 				menge = d.getInteger("menge");
 				menge = menge - 1;
-				
 				
 				summe = d.getDouble("summe");
 				summe = summe - wa.getSumme();
@@ -184,6 +183,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		}
 	}
 	
+	//zeigt alle Artikel an, die gleiche Kategorie haben wie die gesuchte Kategorie 
 	@SuppressWarnings("unchecked")
 	public List<T> sortArtikelWithCategory(Class<?> clazz, int categoryId) {
 		List<T> output = new ArrayList<>();
@@ -209,6 +209,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		return output;
 	}
 	
+	//zeigt alle Artikel an, die gleiche Unterkategorie haben wie die gesuchte Unterkategorie 
 	@SuppressWarnings("unchecked")
 	public List<T> sortArtikelWithUndercategory(Class<?> clazz, int undercategoryId) {
 		List<T> output = new ArrayList<>();
@@ -217,7 +218,6 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		List<Document> responseArtikel = collection.find().into(new ArrayList<Document>());
 		this.collection = DBManager.getDatabase().getCollection("ArtikelKategorie");
 		List<Document> responseKategorie = collection.find().into(new ArrayList<Document>());
-
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -235,6 +235,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		return output;
 	}
 		
+	//zeigt alle Artikel an, die gleiche Kategorie und Unterkategorie haben wie die gesuchte Kategorie/Uterkategorie 
 	@SuppressWarnings("unchecked")
 	public List<T> sortArtikelWithBothCategory(Class<?> clazz, int undercategoryId, int categoryId) {
 		List<T> output = new ArrayList<>();
@@ -243,7 +244,6 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		List<Document> responseArtikel = collection.find().into(new ArrayList<Document>());
 		this.collection = DBManager.getDatabase().getCollection("ArtikelKategorie");
 		List<Document> responseKategorie = collection.find().into(new ArrayList<Document>());
-
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -261,6 +261,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		return output;
 	}
 
+	//Zeigt die Artikel an, deren Beschreibung enthaelt die gesuchte Keyword
 	@SuppressWarnings("unchecked")
 	public List<T> sortAllWithKeyword(Class<?> clazz, String keyword) {
 		List<T> output = new ArrayList<>();
@@ -283,7 +284,7 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		return output;
 	}
 	
-	
+	//Gibt alle WarenkorbArtikel zuruck, welche zu dem accountId passen
 	@SuppressWarnings("unchecked")
 	public List<T> allCartItemsByAccountId(Class<?> clazz, int accountId){
 		List<T> warenkorbArtikel = new ArrayList<>();
@@ -311,9 +312,8 @@ public class GenericDAO<T> implements IGenericDAO<T> {
 		return warenkorbArtikel;		
 	}
 	
-
-	public int createWithTwoIDs(T object) {
-		
+	//erstellt neues Objekt in der Tabelle welches auch _id und id hat - wegen Registrierung und Warenkorb 
+	public int createWithTwoIDs(T object) {		
 		this.gson = builder.create();
 		this.collection = DBManager.getDatabase().getCollection(object.getClass().getSimpleName());
 		int nextID = NextId.getNextId(object.getClass().getSimpleName());
