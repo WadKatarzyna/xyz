@@ -14,7 +14,7 @@ public interface IGenericDAO<T> {
 	 * save the object in DB
 	 * @param object
 	 */
-	void create(T object);
+	int create(T object);
 	
 	/**
 	 * updates a desired object

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import dao.DBManager;
 import daoNoSQL.GenericDAO;
 import model.Account;
@@ -63,6 +65,11 @@ public class HomeController<T> extends HttpServlet {
 		 */
 		Cookie[] cookies = request.getCookies();
 		String workWith = "";
+		
+		//default is SQL-DB
+		if (cookies.length==0) {
+			workWith = "SQL";
+		}
 
         for(int i = 0; i < cookies.length; i++) { 
             Cookie c = cookies[i];
@@ -217,8 +224,7 @@ public class HomeController<T> extends HttpServlet {
 				artikelList = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
 			} 
 			else {
-				//TODO: create a new nosql method for this
-				artikelList = daoSQL.getArtikelDAO().sortWithKeyword(searchText);
+				artikelList = (List<Artikel>) daoNoSQL.sortAllWithKeyword(Artikel.class, searchText);
 			}
 
 			
@@ -228,8 +234,7 @@ public class HomeController<T> extends HttpServlet {
 			if (categorySet && (unterkategorieID == 11 || unterkategorieID == 0)) {
 				listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
 				artikelList = new ArrayList<>();
-				//TODO: change to nosql
-				artikelList = daoSQL.getArtikelDAO().sortWithCategory(kategorieID);
+				artikelList = (List<Artikel>) daoNoSQL.sortArtikelWithCategory(Artikel.class, kategorieID);
 			}
 			
 			if (unterkategorieID != 11 && unterkategorieID != 0) {
@@ -238,15 +243,13 @@ public class HomeController<T> extends HttpServlet {
 				//list anhand beide unterkategorie und kategorie
 				if (categorySet) {
 					listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
-					//TODO: change to nosql
-					artikelList = daoSQL.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
+					artikelList = (List<Artikel>) daoNoSQL.sortArtikelWithBothCategory(Artikel.class, unterkategorieID, kategorieID);
 				
 				} 
 				//list anhand nur unterkategorie
 				else {
 					listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
-					//TODO:change to nosql
-					artikelList = daoSQL.getArtikelDAO().sortWithUndercategory(unterkategorieID);
+					artikelList = (List<Artikel>) daoNoSQL.sortArtikelWithUndercategory(Artikel.class, unterkategorieID);
 				}
 
 			}
@@ -256,10 +259,10 @@ public class HomeController<T> extends HttpServlet {
 			
 			
 			if(account != null) {
-				//TODO:change to nosql
-				request.setAttribute("warenkorbArtikel", daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId()));
-				//TODO:change to nosql
-				for(WarenkorbArtikel w: daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(account.getId())){
+				request.setAttribute("warenkorbArtikel", daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, account.getId()));
+				System.out.println("getAccountId "+account.getId());
+
+				for(WarenkorbArtikel w: (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, account.getId())){
 					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
 					for(Artikel a : artikellist) {
 						if(w.getArtikelid() == a.getId()) {
@@ -503,9 +506,7 @@ public class HomeController<T> extends HttpServlet {
 	    				warenkorb = new Warenkorb();
 	    				warenkorb.setAccountId(Integer.parseInt(accountId));
 	    				warenkorb.setErstelldatum(date);
-	    				//TODO:
-	    				warenkorb.setId(daoSQL.getWarenkorbDAO().create(warenkorb));
-	    			
+	    				warenkorb.setId(daoNoSQL.createWithTwoIDs((T) warenkorb));
 	    				
 	    			}
 	    			
@@ -513,8 +514,8 @@ public class HomeController<T> extends HttpServlet {
 	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
 	    			
 	    			
-	    			//TODO:
-	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    			for( WarenkorbArtikel a : (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, Integer.parseInt(accountId))) {
+	    				System.out.println("accountID "+accountId);
 	    				if(a.getArtikelid() == artikelId) {
 	    					oldElement = true;
 	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
@@ -525,8 +526,7 @@ public class HomeController<T> extends HttpServlet {
 	    						}
 	    					}
 	    					
-	    					//TODO:
-	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    					daoNoSQL.updateWarenkorbArtikel((T) a, a.getArtikelid(), a);
 	    				}
 	    			}
 	    			
@@ -544,22 +544,19 @@ public class HomeController<T> extends HttpServlet {
 	    						
 	    					}
 	    				}
-	    				//TODO:
-	    				daoSQL.getWarenkorbArtikelDAO().create(warenkorbartikel);
+	    				daoNoSQL.create((T)warenkorbartikel);
 	    			}
 	
 	    		}else if(request.getParameter("typ").equals("remove")){
 	    			
 	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
-	    			//TODO:
-	    			daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(artikelId);
+	    			daoNoSQL.delete(WarenkorbArtikel.class, artikelId);
 	    			
 	    		}else if(request.getParameter("typ").equals("increase")){
 	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
 	    			String accountId = request.getParameter("accountId");
 	
-	    			//TODO:
-	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    			for( WarenkorbArtikel a : (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, Integer.parseInt(accountId))) {
 	    				if(a.getArtikelid() == artikelId) {
 	    					
 	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
@@ -570,8 +567,7 @@ public class HomeController<T> extends HttpServlet {
 	    							
 	    						}
 	    					}
-	    					//TODO:
-	    					daoSQL.getWarenkorbArtikelDAO().update(a);
+	    					daoNoSQL.updateWarenkorbArtikel((T) a, a.getArtikelid(), a);
 	    				}
 	    			}
 	    			
@@ -579,8 +575,7 @@ public class HomeController<T> extends HttpServlet {
 	    			int artikelId = Integer.parseInt(request.getParameter("artikelId"));
 	    			String accountId = request.getParameter("accountId");
 	    			
-	    			//TODO:
-	    			for( WarenkorbArtikel a : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
+	    			for( WarenkorbArtikel a : (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, Integer.parseInt(accountId))) {
 	    				if(a.getArtikelid() == artikelId) {
 	    					
 	    					List<Artikel> artikellist = (List<Artikel>) daoNoSQL.getAll(Artikel.class);
@@ -590,8 +585,7 @@ public class HomeController<T> extends HttpServlet {
 	    							
 	    						}
 	    					}
-	    					//TODO:
-	    					daoSQL.getWarenkorbArtikelDAO().updateDecrease(a);
+	    					daoNoSQL.updateDecrease((T) a, artikelId, a);
 	    				}
 	    			}
 	    			
@@ -602,8 +596,7 @@ public class HomeController<T> extends HttpServlet {
 	    			String accountId = request.getParameter("accountId");
 	    			Double total = Double.parseDouble(request.getParameter("total"));
 	    			
-	    			//TODO:
-	    			List<WarenkorbArtikel> warenkorbArtikelList = daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId));
+	    			List<WarenkorbArtikel> warenkorbArtikelList = (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, Integer.parseInt(accountId));
 	    			
 	    			Bestellung bestellung = new Bestellung();
 	    			bestellung.setSumme(total);
@@ -620,8 +613,8 @@ public class HomeController<T> extends HttpServlet {
 	    			
 	    			bestellung.setLieferdatum(date);
 	    			bestellung.setAccountId(Integer.parseInt(accountId));
-	    			//TODO:
-	    			int bestellungID = daoSQL.getBestellungDAO().create(bestellung);
+
+	    			int bestellungID = daoNoSQL.create((T) bestellung);
 	    			
 	    			
 	    			for(WarenkorbArtikel w : warenkorbArtikelList) {
@@ -640,10 +633,8 @@ public class HomeController<T> extends HttpServlet {
 	    			}
 	    			
 	    			//lösche warenkorb nach bestellung
-	    			//TODO:
-	    			for(WarenkorbArtikel wa : daoSQL.getWarenkorbArtikelDAO().findAllCartItemsByAccountId(Integer.parseInt(accountId))) {
-	    				//TODO:
-	    				daoSQL.getWarenkorbArtikelDAO().deleteByarticleId(wa.getArtikelid());
+	    			for(WarenkorbArtikel wa : (List<WarenkorbArtikel>) daoNoSQL.allCartItemsByAccountId(WarenkorbArtikel.class, Integer.parseInt(accountId))) {
+	    				daoNoSQL.delete(WarenkorbArtikel.class, wa.getArtikelid());
 	    			}
 				
 	    		}

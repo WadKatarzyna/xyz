@@ -15,14 +15,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
+import daoNoSQL.GenericDAO;
 import model.Account;
 import model.Person;
 
 /**
  * Servlet implementation class ReagisterController
+ * @param <T>
  */
 @WebServlet("/registration")
-public class RegisterController extends HttpServlet {
+public class RegisterController<T> extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -40,9 +42,12 @@ public class RegisterController extends HttpServlet {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		DBManager db = DBManager.getInstance();
+		GenericDAO<T> daoNoSQL = new GenericDAO<>();
+
 		
 		/**
 		 * Entscheidungspunkt...
@@ -85,14 +90,13 @@ public class RegisterController extends HttpServlet {
 				db.getAccountDAO().create(account);
 				
 			}else if(workWith.equals("NoSQL")) {
-				//TODO: change to nosql
-				int person_personalnr = db.getPersonDAO().create(person);
+				int person_personalnr = daoNoSQL.create((T) person);
 				
 				account.setUsername(request.getParameter("username"));
 				account.setPasswort(request.getParameter("user_passwort"));
 				account.setPerson_personalnr(person_personalnr);
-				//TODO: change to nosql
-				db.getAccountDAO().create(account);
+
+				daoNoSQL.createWithTwoIDs((T) account);				
 		    }
 			
 			
