@@ -1,10 +1,8 @@
-package dao;
+package daoSQL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import model.Warenkorb;
 
 /**
  * <h1> Database Manager</h1>
@@ -31,7 +29,7 @@ public class DBManager {
 	private WarenkorbArtikelDAO warenkorbArtikelDAO;
 	private WarenkorbDAO warenkorbDAO;
 	private BestellungDAO bestellungDAO;
-	
+	private WorkWithDAO workWithDAO;
 	
 
 	
@@ -49,7 +47,7 @@ public class DBManager {
 		warenkorbDAO			= new WarenkorbDAO(this);
 		unterkategorieDAO	= new UnterkategorieDAO(this);
 		bestellungDAO		= new BestellungDAO(this);
-
+		workWithDAO  		= new WorkWithDAO(this);
 	}
 
 	private static void openConnection() {
@@ -177,5 +175,11 @@ public class DBManager {
 	public BestellungDAO getBestellungDAO() {
 		return bestellungDAO;
 	}
+
+	public WorkWithDAO getWorkWithDAO() {
+		return workWithDAO;
+	}
+
+
 
 }

@@ -2,7 +2,7 @@ package unitTest.SQL;
 
 import org.junit.jupiter.api.Test;
 
-import dao.DBManager;
+import daoSQL.DBManager;
 import model.Person;
 
 /**
@@ -20,4 +20,14 @@ public class DBConnectionTest {
 		System.out.println(x.getGeschlecht());
 	}
 	
+	@Test
+	public void testSetWorkwith() {
+		db.getWorkWithDAO().setWorkwith(1);
+	}
+	
+	@Test
+	public void testGetWorkWith() {
+		System.out.println(db.getWorkWithDAO().getWorkwith());
+		
+	}
 }

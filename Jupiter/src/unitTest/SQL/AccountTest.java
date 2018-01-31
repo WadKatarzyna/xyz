@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import dao.DBManager;
+import daoSQL.DBManager;
 import model.Account;
 
 public class AccountTest {

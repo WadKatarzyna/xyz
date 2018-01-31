@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import dao.DBManager;
+import daoSQL.DBManager;
 import model.BestellteArtikel;
 
 public class BestellteArtikelTest {

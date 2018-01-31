@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import dao.DBManager;
+import daoSQL.DBManager;
 import model.Person;
 
 public class PersonTest {

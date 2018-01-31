@@ -24,6 +24,9 @@ drop table if exists hersteller;
 drop table if exists hobby;
 drop table if exists abteilung;
 
+-- Entscheidungtabelle .. SQL oder NoSQL
+drop table if exists work_with;
+
 
 create table hersteller(
 	hersteller_id integer primary key auto_increment not null,
@@ -209,8 +212,10 @@ create table warenkorbArtikel(
 
 );
 
-
-
+create table work_with(
+	id integer primary key not null,
+	SQL_ smallint(1) not null
+);
 
 
 

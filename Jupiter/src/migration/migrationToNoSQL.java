@@ -3,8 +3,8 @@ package migration;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.DBManager;
 import daoNoSQL.GenericDAO;
+import daoSQL.DBManager;
 import model.Account;
 import model.Artikel;
 import model.ArtikelKategorie;
@@ -23,7 +23,7 @@ public class migrationToNoSQL {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> void main(String[] args) {
-		
+		System.out.println("migration started");
 		//SQL DBManager
 		DBManager daoSQL = DBManager.getInstance();
 		//NoSQL DBManager
@@ -271,7 +271,7 @@ public class migrationToNoSQL {
 				daoNoSQL.create((T) warenkorbSQL);
 			}
 		}
-		
+		System.out.println("migration ended");
 		
 	}
 	

@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.IOException;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,13 +8,12 @@ import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.DBManager;
 import daoNoSQL.GenericDAO;
+import daoSQL.DBManager;
 import model.Account;
 import model.Person;
 
@@ -50,18 +48,11 @@ public class RegisterController<T> extends HttpServlet {
 
 		
 		/**
-		 * Entscheidungspunkt...
-		 * SQL oder NoSQL
+		 * hier erhalten wir.
+		 * 1 = SQL Datenbank
+		 * 0 = NoSQL Datenbank
 		 */
-		Cookie[] cookies = request.getCookies();
-		String workWith = "";
-
-        for(int i = 0; i < cookies.length; i++) { 
-            Cookie c = cookies[i];
-            if (c.getName().equals("DB")) {
-                workWith = c.getValue();
-            }
-        }
+		int workWith = db.getWorkWithDAO().getWorkwith();
         
        
 
@@ -80,7 +71,8 @@ public class RegisterController<T> extends HttpServlet {
 			person.setGeschlecht(request.getParameter("geschlecht"));
 			person.setEmail(request.getParameter("email"));
 			
-			if(workWith.equals("SQL")) {
+			//1 = SQL
+			if(workWith == 1) {
 				int person_personalnr = db.getPersonDAO().create(person);
 				
 				account.setUsername(request.getParameter("username"));
@@ -88,8 +80,8 @@ public class RegisterController<T> extends HttpServlet {
 				account.setPerson_personalnr(person_personalnr);
 				
 				db.getAccountDAO().create(account);
-				
-			}else if(workWith.equals("NoSQL")) {
+				//0 = NoSQL
+			}else if(workWith == 0) {
 				int person_personalnr = daoNoSQL.create((T) person);
 				
 				account.setUsername(request.getParameter("username"));

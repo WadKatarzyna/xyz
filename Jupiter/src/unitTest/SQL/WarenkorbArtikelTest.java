@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 
 import org.junit.Test;
 
-import dao.DBManager;
+import daoSQL.DBManager;
 import model.WarenkorbArtikel;
 
 public class WarenkorbArtikelTest {

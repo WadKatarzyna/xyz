@@ -15,10 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
-import dao.DBManager;
 import daoNoSQL.GenericDAO;
+import daoSQL.DBManager;
+import helper.NextId;
 import model.Account;
 import model.Artikel;
 import model.ArtikelKategorie;
@@ -59,25 +58,13 @@ public class HomeController<T> extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		/**
-		 * Entscheidungspunkt...
-		 * SQL oder NoSQL
-		 */
-		Cookie[] cookies = request.getCookies();
-		String workWith = "";
 		
-		//default is SQL-DB
-		if (cookies.length==0) {
-			workWith = "SQL";
-		}
-
-        for(int i = 0; i < cookies.length; i++) { 
-            Cookie c = cookies[i];
-            if (c.getName().equals("DB")) {
-                workWith = c.getValue();
-            }
-        }
-	        
+		/**
+		 * hier erhalten wir.
+		 * 1 = SQL Datenbank
+		 * 0 = NoSQL Datenbank
+		 */
+		int workWith = daoSQL.getWorkWithDAO().getWorkwith();
 	        
 		
 		Account account = (Account) request.getSession().getAttribute("credentials");
@@ -107,7 +94,7 @@ public class HomeController<T> extends HttpServlet {
 		Warenkorb warenkorb = null;
 		Kategorie kategorie = null;
 		
-		if(workWith.equals("SQL")) {
+		if(workWith == 1) {
 			System.out.println("working with SQL-DB");
 			
 			kategorieList = daoSQL.getKategorieDAO().findAll();
@@ -130,11 +117,9 @@ public class HomeController<T> extends HttpServlet {
 			//Search from searchbar
 			if ((searchText == null || searchText.isEmpty())) {
 				artikelList = daoSQL.getArtikelDAO().findAll();
-				System.out.println(1);
 			} 
 			else {
 				artikelList = daoSQL.getArtikelDAO().sortWithKeyword(searchText);
-				System.out.println(2);
 			}
 
 			
@@ -146,23 +131,19 @@ public class HomeController<T> extends HttpServlet {
 				listedItemsKeyword = "Alle "+kategorie.getName() +"artikel erfolgreich angezeigt!";
 				artikelList = new ArrayList<>();
 				artikelList = daoSQL.getArtikelDAO().sortWithCategory(kategorieID);
-				System.out.println(3);
 			}
 			
 			if (unterkategorieID != 11 && unterkategorieID != 0) {
 				Unterkategorie unterkategorie = daoSQL.getUnterkategorieDAO().findById(unterkategorieID);
-				System.out.println(4);
 				//list anhand beide unterkategorie und kategorie
 				if (categorySet) {
 					listedItemsKeyword = unterkategorie.getBezeichnung()+" "+kategorie.getName() +" erfolgreich angezeigt!";
 					artikelList = daoSQL.getArtikelDAO().sortWithBothCcategory(kategorieID, unterkategorieID);
-					System.out.println(5);
 				} 
 				//list anhand nur unterkategorie
 				else {
 					listedItemsKeyword = "Alle "+unterkategorie.getName()+" erfolgreich angezeigt!";
 					artikelList = daoSQL.getArtikelDAO().sortWithUndercategory(unterkategorieID);
-					System.out.println(6);
 				}
 
 			}
@@ -199,7 +180,7 @@ public class HomeController<T> extends HttpServlet {
 			 * 
 			 * 
 			 */
-		}else if(workWith.equals("NoSQL")) {
+		}else if(workWith == 0) {
 			System.out.println("working with NoSQL-DB");
 			
 			kategorieList = (List<Kategorie>) daoNoSQL.getAll(Kategorie.class);
@@ -303,20 +284,14 @@ public class HomeController<T> extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/**
-		 * Entscheidungspunkt...
-		 * SQL oder NoSQL
+		 * hier erhalten wir.
+		 * 1 = SQL Datenbank
+		 * 0 = NoSQL Datenbank
 		 */
-		Cookie[] cookies = request.getCookies();
-		String workWith = "";
-
-        for(int i = 0; i < cookies.length; i++) { 
-            Cookie c = cookies[i];
-            if (c.getName().equals("DB")) {
-                workWith = c.getValue();
-            }
-        }
+		int workWith = daoSQL.getWorkWithDAO().getWorkwith();
         
-        if(workWith.equals("SQL")) {
+		// 1 = SQL
+        if(workWith == 1) {
 	        	if(request.getParameter("typ").equals("cart")){
 	    			//to cart
 	    			
@@ -444,13 +419,14 @@ public class HomeController<T> extends HttpServlet {
 	    			
 	    			//lieferdatum = heute + 5 tage
 	    			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-	    			Calendar cal = Calendar.getInstance();
+	    			Date dt = new Date();
+	    			Calendar c = Calendar.getInstance(); 
+	    			c.setTime(dt); 
+	    			c.add(Calendar.DATE, 5);
+	    			dt = c.getTime();
 	    			
-	    			int day = Calendar.DAY_OF_MONTH + 5;
-	    			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
+	    			String date = df.format(dt);
 	    			
-	    			Date d = cal.getTime();
-	    			String date = df.format(d);
 	    			
 	    			bestellung.setLieferdatum(date);
 	    			bestellung.setAccountId(Integer.parseInt(accountId));
@@ -476,7 +452,8 @@ public class HomeController<T> extends HttpServlet {
 	    			}
     			
 	    		}
-        }else if(workWith.equals("NoSQL")) {
+	        	//0 = NoSQL
+        }else if(workWith == 0) {
         		
 	        	if(request.getParameter("typ").equals("cart")){
 	    			//to cart
@@ -603,14 +580,14 @@ public class HomeController<T> extends HttpServlet {
 	    			
 	    			//lieferdatum = heute + 5 tage
 	    			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-	    			Calendar cal = Calendar.getInstance();
+	    			Date dt = new Date();
+	    			Calendar c = Calendar.getInstance(); 
+	    			c.setTime(dt); 
+	    			c.add(Calendar.DATE, 5);
+	    			dt = c.getTime();
+	    			String date = df.format(dt);
 	    			
-	    			int day = Calendar.DAY_OF_MONTH + 5;
-	    			cal.set(Calendar.DAY_OF_MONTH, Calendar.DAY_OF_MONTH + 5 );
-	    			
-	    			Date d = cal.getTime();
-	    			String date = df.format(d);
-	    			
+	    			bestellung.setId(NextId.getNextId(Bestellung.class.getSimpleName()));
 	    			bestellung.setLieferdatum(date);
 	    			bestellung.setAccountId(Integer.parseInt(accountId));
 

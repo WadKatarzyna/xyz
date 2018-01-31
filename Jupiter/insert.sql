@@ -978,3 +978,6 @@ insert into warenkorbArtikel (warenkorbArtikel_id, warenkorbArtikel_artikel_id, 
 insert into warenkorbArtikel (warenkorbArtikel_id, warenkorbArtikel_artikel_id, warenkorbArtikel_menge, warenkorbArtikel_summe) values (38, 38, 12, 221);
 insert into warenkorbArtikel (warenkorbArtikel_id, warenkorbArtikel_artikel_id, warenkorbArtikel_menge, warenkorbArtikel_summe) values (39, 39, 8, 62);
 insert into warenkorbArtikel (warenkorbArtikel_id, warenkorbArtikel_artikel_id, warenkorbArtikel_menge, warenkorbArtikel_summe) values (40, 40, 1, 144);
+
+
+INSERT INTO work_with ( id ,  SQL_ ) VALUES (1,1);
